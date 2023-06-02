@@ -1,0 +1,40 @@
+{
+  "name": "sf-hoop-calendar",
+  "version": "1.0.0",
+  "description": "Aggregating San Francisco public rec center gym hours into a calendar",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/j13huang/sf-hoop-calendar.git"
+  },
+  "author": "j13huang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/j13huang/sf-hoop-calendar/issues"
+  },
+  "homepage": "https://github.com/j13huang/sf-hoop-calendar#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "clsx": "^1.2.1",
+    "next": "^13.4.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.31",
+    "@types/jest": "^29.5.1",
+    "@types/next": "^9.0.0",
+    "@types/node": "20.2.5",
+    "@types/react": "^18.2.7",
+    "@types/react-dom": "^18.2.4",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "5.0.4"
+  }
+}

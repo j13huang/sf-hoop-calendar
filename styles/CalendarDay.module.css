@@ -1,0 +1,20 @@
+.day {
+  border: solid 1px black;
+  min-width: 100px;
+}
+
+.timeIncrement {
+  display: flex;
+  height: 24px;
+  background: whitesmoke;
+  max-width: 200px;
+}
+
+.timeInterval:nth-child(4n + 1) {
+  border-top: solid 1px darkgrey;
+}
+
+.cell {
+  flex: 1;
+  height: 100%;
+}

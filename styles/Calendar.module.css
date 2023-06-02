@@ -1,0 +1,58 @@
+.container {
+}
+
+.checkboxes {
+  display: flex;
+  margin-bottom: 24px;
+}
+
+.checkbox {
+  display: block;
+  border: 1px solid black;
+  border-radius: 4px;
+  padding: 8px;
+  margin: 4px;
+  margin-right: 24px;
+}
+
+.calendarContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.times {
+  margin-top: -8px;
+  margin-right: 4px;
+  text-align: end;
+}
+
+.timesTimeIncrement {
+  height: 24px;
+}
+
+.timesTimeIncrement:nth-child(4n + 1) {
+  /*
+  border-top: solid 1px grey;
+  */
+}
+
+.day {
+  border: solid 1px black;
+  min-width: 200px;
+}
+
+.timeIncrement {
+  display: flex;
+  height: 24px;
+  background: whitesmoke;
+}
+
+.timeIncrement:nth-child(4n + 1) {
+  border-top: solid 1px darkgrey;
+}
+
+.cell {
+  flex: 1 1;
+  width: 0px;
+  height: 100%;
+}
