@@ -40,9 +40,7 @@
 .day {
   border: solid 1px black;
   width: 200px;
-  /*
   overflow-x: hidden;
-  */
 }
 
 .dayName {

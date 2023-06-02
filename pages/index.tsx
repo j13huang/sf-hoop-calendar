@@ -37,6 +37,7 @@ export default function Home({ schedules }) {
 
       <style jsx>{`
         main {
+          margin-top: 2rem;
         }
         footer {
           width: 100%;
