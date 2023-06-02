@@ -18,7 +18,7 @@ export function parseSunsetSchedule(body, activityFilter?: string) {
   */
   let content = heading.find("#isPasted").first().closest("h2.subhead1");
   if (!$(content).length) {
-    console.log("nope");
+    //console.log("nope");
     // if it's not nested under the same h2 element, it could be under the adjacent sibling
     content = $(heading.next())
       .find("#isPasted")
@@ -30,9 +30,9 @@ export function parseSunsetSchedule(body, activityFilter?: string) {
     times.push($(e).text());
   });
 
-  console.log(times);
+  //console.log(times);
   let result = parse(times, activityFilter);
-  console.log("done", result);
+  //console.log("done", result);
   return result;
 }
 
@@ -70,7 +70,7 @@ export function parse(textSchedule: string[], activityFilter?: string) {
 
 function parseSchedule(schedule: string, activityFilter?: string) {
   const tokenized = tokenizeSchedule(schedule);
-  console.log("tokenized", tokenized);
+  //console.log("tokenized", tokenized);
   return formatTokens(tokenized, activityFilter);
 }
 

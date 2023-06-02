@@ -91,7 +91,7 @@ export async function getSchedules() {
     REC_CENTERS.map(async (rc) => {
       const response = await fetch(rc.url);
       const body = await response.text();
-      console.log(body);
+      //console.log(body);
 
       // omit parser from return value
       const { parser, ...result }: any = rc;
@@ -99,6 +99,6 @@ export async function getSchedules() {
       return result;
     })
   );
-  console.log(schedules);
+  //console.log(schedules);
   return schedules;
 }
