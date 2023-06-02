@@ -90,12 +90,19 @@ export async function getSchedules() {
   let schedules = await Promise.all(
     REC_CENTERS.map(async (rc) => {
       const response = await fetch(rc.url);
-      const body = await response.text();
-      //console.log(body);
+      let body = await response.text();
+      while (body.includes("An error has occurred")) {
+        const response = await fetch(rc.url);
+        body = await response.text();
+      }
+      //console.log(rc, body.length);
 
       // omit parser from return value
       const { parser, ...result }: any = rc;
       result.timeIntervals = rc.parser(body, "basketball");
+      //if (result.timeIntervals.Tuesday.length === 0) {
+      //console.log(rc, body);
+      //}
       return result;
     })
   );
