@@ -6,7 +6,7 @@
 .timeIncrement {
   display: flex;
   height: 24px;
-  background: whitesmoke;
+  background-color: whitesmoke;
   max-width: 200px;
 }
 

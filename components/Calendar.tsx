@@ -68,7 +68,7 @@ export default function Calendar({ schedules }: Props) {
         ].map((day) => {
           return (
             <div key={day} className={styles.day}>
-              <div>{day}</div>
+              <div className={styles.dayName}>{day}</div>
               <div>
                 {TIME_INCREMENTS.map((timeIncrement) => {
                   /*

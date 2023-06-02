@@ -1,4 +1,6 @@
 .container {
+  margin-left: 4rem;
+  margin-right: 4rem;
 }
 
 .checkboxes {
@@ -17,7 +19,6 @@
 
 .calendarContainer {
   display: flex;
-  justify-content: center;
 }
 
 .times {
@@ -38,13 +39,24 @@
 
 .day {
   border: solid 1px black;
-  min-width: 200px;
+  width: 200px;
+  /*
+  overflow-x: hidden;
+  */
+}
+
+.dayName {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  opacity: 0.9;
+  background-color: white;
 }
 
 .timeIncrement {
   display: flex;
   height: 24px;
-  background: whitesmoke;
+  background-color: whitesmoke;
 }
 
 .timeIncrement:nth-child(4n + 1) {
