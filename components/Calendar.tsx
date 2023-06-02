@@ -18,31 +18,30 @@ export default function Calendar({ schedules }: Props) {
     }, {})
   );
 
-  let selectedSchedules = useMemo(() => {
-    return schedules.filter((s) => selectedLocations[s.location]);
-  }, [schedules, selectedLocations]);
   return (
     <div className={styles.container}>
       <div className={styles.checkboxes}>
         {schedules.map((s) => {
           return (
-            <label key={s.location} className={styles.checkbox}>
-              <input
-                type="checkbox"
-                checked={selectedLocations[s.location]}
-                onChange={() =>
-                  setLocations({
-                    ...selectedLocations,
-                    [s.location]: !selectedLocations[s.location],
-                  })
-                }
-              />
-              {s.location}
-              <br />
-              <a target="_blank" href={s.url}>
-                website
-              </a>
-            </label>
+            <div key={s.location}>
+              <label className={styles.checkbox}>
+                <input
+                  type="checkbox"
+                  checked={selectedLocations[s.location]}
+                  onChange={() =>
+                    setLocations({
+                      ...selectedLocations,
+                      [s.location]: !selectedLocations[s.location],
+                    })
+                  }
+                />
+                {s.location} (
+                <a target="_blank" href={s.url}>
+                  website
+                </a>
+                )
+              </label>
+            </div>
           );
         })}
       </div>
@@ -51,7 +50,7 @@ export default function Calendar({ schedules }: Props) {
           <div>&nbsp;</div>
           <div className={styles.times}>
             {TIME_INCREMENTS.map((timeIncrement, i) => (
-              <div key={timeIncrement} className={styles.timesTimeIncrement}>
+              <div key={timeIncrement} className={styles.timeIncrement}>
                 {i % 4 === 0 ? minutesToTime(timeIncrement) : ""}
               </div>
             ))}
@@ -69,19 +68,14 @@ export default function Calendar({ schedules }: Props) {
           return (
             <div key={day} className={styles.day}>
               <div className={styles.dayName}>{day}</div>
-              <div>
-                {TIME_INCREMENTS.map((timeIncrement) => {
-                  /*
-                    return (
-                        <CalendarDay key={day} day={day} schedules={selectedSchedules} />
-                    );
-                */
+              <div className={styles.dayGymSchedules}>
+                {schedules.map((s) => {
+                  if (!selectedLocations[s.location]) {
+                    return null;
+                  }
                   return (
-                    <div key={timeIncrement} className={styles.timeIncrement}>
-                      {schedules.map((s) => {
-                        if (!selectedLocations[s.location]) {
-                          return null;
-                        }
+                    <div key={s.location} className={styles.dayGymSchedule}>
+                      {TIME_INCREMENTS.map((timeIncrement) => {
                         let scheduleInterval = s.timeIntervals[day].find(
                           (s) => {
                             return (
@@ -93,7 +87,7 @@ export default function Calendar({ schedules }: Props) {
                           return (
                             <div
                               key={`${s.location}-${timeIncrement}`}
-                              className={styles.cell}
+                              className={styles.timeIncrement}
                             >
                               {" "}
                             </div>
@@ -103,7 +97,7 @@ export default function Calendar({ schedules }: Props) {
                           <div
                             key={`${s.location}-${timeIncrement}`}
                             className={clsx(
-                              styles.cell,
+                              styles.timeIncrement,
                               "active",
                               scheduleInterval[0] === timeIncrement && "first"
                             )}

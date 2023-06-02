@@ -15,7 +15,8 @@ export const TIME_INCREMENTS = new Array(52)
   .map((_, i) => 480 + i * 15);
 
 // NOTE: not implemented
-// potentially more complex rendering scheme for multiple/overlapping gym time intervals
+// potentially more complex rendering scheme for multiple/overlapping schedule blocks between gyms,
+// where schedule blocks have variable width depending on how many other blocks overlap with the time interval
 export default function CalendarDay({ day, schedules }: Props) {
   let groupedTimeIntervals = useMemo(() => {
     return calculateTimeIntervalGroups(schedules, day);

@@ -3,8 +3,16 @@
   margin-right: 4rem;
 }
 
+@media (max-width: 600px) {
+  .container {
+    margin-left: 2rem;
+    margin-right: 2rem;
+  }
+}
+
 .checkboxes {
   display: flex;
+  flex-wrap: wrap;
   margin-bottom: 24px;
 }
 
@@ -27,22 +35,16 @@
   text-align: end;
 }
 
-.timesTimeIncrement {
+.timeIncrement {
   height: 24px;
 }
 
-.timesTimeIncrement:nth-child(4n + 1) {
-  /*
-  border-top: solid 1px grey;
-  */
-}
-
 .day {
-  border: solid 1px black;
+  border: solid 1px grey;
+  background-color: whitesmoke;
   width: 200px;
-  /*
+  flex-grow: 1;
   overflow-x: hidden;
-  */
 }
 
 .dayName {
@@ -51,20 +53,18 @@
   z-index: 2;
   opacity: 0.9;
   background-color: white;
+  border-bottom: 1px solid darkgrey;
 }
 
-.timeIncrement {
+.dayGymSchedules {
   display: flex;
-  height: 24px;
-  background-color: whitesmoke;
 }
 
-.timeIncrement:nth-child(4n + 1) {
-  border-top: solid 1px darkgrey;
-}
-
-.cell {
+.dayGymSchedule {
   flex: 1 1;
   width: 0px;
-  height: 100%;
+}
+
+.dayGymSchedule .timeIncrement:nth-child(4n + 1) {
+  border-top: solid 1px darkgrey;
 }
