@@ -44,7 +44,7 @@
   background-color: whitesmoke;
   width: 200px;
   flex-grow: 1;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .dayName {
