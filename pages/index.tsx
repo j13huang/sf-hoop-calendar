@@ -85,6 +85,7 @@ export default function Home({ schedules }) {
 }
 
 export async function getServerSideProps(context) {
+  //console.log(context);
   const schedules = await getSchedules();
   return {
     props: {

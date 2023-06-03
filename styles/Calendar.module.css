@@ -65,6 +65,6 @@
   width: 0px;
 }
 
-.dayGymSchedule .timeIncrement:nth-child(4n + 1) {
+.dayGymSchedule .emptyTimeIncrement.timeIncrement:nth-child(4n + 1) {
   border-top: solid 1px darkgrey;
 }

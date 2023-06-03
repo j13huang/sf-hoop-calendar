@@ -1,21 +1,35 @@
 export const DATE_WORDS = {
   Sun: "Sunday",
   Sunday: "Sunday",
+  sun: "Sunday",
+  sunday: "Sunday",
   Mon: "Monday",
   Monday: "Monday",
+  mon: "Monday",
+  monday: "Monday",
   Tue: "Tuesday",
   Tuesday: "Tuesday",
+  tue: "Tuesday",
+  tuesday: "Tuesday",
   Wed: "Wednesday",
   Wednesday: "Wednesday",
+  wed: "Wednesday",
+  wednesday: "Wednesday",
   Thu: "Thursday",
   Thursday: "Thursday",
+  thu: "Thursday",
+  thursday: "Thursday",
   Fri: "Friday",
   Friday: "Friday",
+  fri: "Friday",
+  friday: "Friday",
   Sat: "Saturday",
   Saturday: "Saturday",
+  sat: "Saturday",
+  saturday: "Saturday",
 };
 
-const TIME_REGEX = /\d{1,2}:\d{2}(?:am|pm)?/;
+export const TIME_REGEX = /\d{1,2}:\d{2}(?:am|pm)?/i;
 
 // convert to minutes from midnight
 export function timeToMinutes(time: string): number {
@@ -51,8 +65,4 @@ export function stripTimeFormattingReadable(time: string): number {
   number += parseInt(nums[1]);
 
   return number;
-}
-
-export function isTime(s: string): boolean {
-  return !!s.match(TIME_REGEX);
 }

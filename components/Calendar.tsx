@@ -3,7 +3,7 @@ import clsx from "clsx";
 import styles from "../styles/Calendar.module.css";
 
 import CalendarDay, { TIME_INCREMENTS } from "./CalendarDay";
-import { minutesToTime } from "../lib/parsers/time-utils";
+import { minutesToTime } from "../lib/time-utils";
 
 type Props = {
   schedules: any[];
@@ -27,7 +27,7 @@ export default function Calendar({ schedules }: Props) {
               <label className={styles.checkbox}>
                 <input
                   type="checkbox"
-                  checked={selectedLocations[s.location]}
+                  checked={!!selectedLocations[s.location]}
                   onChange={() =>
                     setLocations({
                       ...selectedLocations,
@@ -87,7 +87,10 @@ export default function Calendar({ schedules }: Props) {
                           return (
                             <div
                               key={`${s.location}-${timeIncrement}`}
-                              className={styles.timeIncrement}
+                              className={clsx(
+                                styles.timeIncrement,
+                                styles.emptyTimeIncrement
+                              )}
                             >
                               {" "}
                             </div>
@@ -118,6 +121,7 @@ export default function Calendar({ schedules }: Props) {
                               .active.first {
                                 z-index: 1;
                                 overflow-x: clip;
+                                padding: 4px;
                               }
                             `}</style>
                           </div>

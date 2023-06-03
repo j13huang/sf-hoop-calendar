@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import clsx from "clsx";
 import styles from "../styles/CalendarDay.module.css";
 
-import { minutesToTime } from "../lib/parsers/time-utils";
+import { minutesToTime } from "../lib/time-utils";
 
 type Props = {
   day: string;
