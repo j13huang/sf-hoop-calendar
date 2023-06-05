@@ -5,24 +5,21 @@
 
 @media (max-width: 600px) {
   .container {
-    margin-left: 2rem;
-    margin-right: 2rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
   }
 }
 
 .checkboxes {
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
+  margin-right: 16px;
 }
 
 .checkbox {
   display: block;
-  border: 1px solid black;
+  border: 1px solid #bbbbbb;
   border-radius: 4px;
   padding: 8px;
-  margin: 4px;
-  margin-right: 24px;
+  margin-bottom: 8px;
 }
 
 .calendarContainer {
@@ -37,14 +34,19 @@
 
 .timeIncrement {
   height: 24px;
+  /*
+    border-top: solid 1px darkgrey;
+    */
 }
 
 .day {
-  border: solid 1px grey;
-  background-color: whitesmoke;
+  border: solid 1px #969696;
   width: 200px;
   flex-grow: 1;
+  flex-shrink: 0;
+  /*
   overflow-x: clip;
+  */
 }
 
 .dayName {
@@ -52,8 +54,7 @@
   top: 0;
   z-index: 2;
   opacity: 0.9;
-  background-color: white;
-  border-bottom: 1px solid darkgrey;
+  border-bottom: 1px solid #969696;
 }
 
 .dayGymSchedules {
@@ -66,5 +67,5 @@
 }
 
 .dayGymSchedule .emptyTimeIncrement.timeIncrement:nth-child(4n + 1) {
-  border-top: solid 1px darkgrey;
+  border-top: solid 1px #969696;
 }

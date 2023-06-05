@@ -18,13 +18,15 @@ export default function Calendar({ schedules }: Props) {
     }, {})
   );
 
+  let now = new Date();
+  let nowTotalMinutes = now.getHours() * 60 + now.getMinutes();
   return (
     <div className={styles.container}>
-      <div className={styles.checkboxes}>
-        {schedules.map((s) => {
-          return (
-            <div key={s.location}>
-              <label className={styles.checkbox}>
+      <div className={styles.calendarContainer}>
+        <div className={styles.checkboxes}>
+          {schedules.map((s) => {
+            return (
+              <label key={s.location} className={styles.checkbox}>
                 <input
                   type="checkbox"
                   checked={!!selectedLocations[s.location]}
@@ -35,17 +37,16 @@ export default function Calendar({ schedules }: Props) {
                     })
                   }
                 />
-                {s.location} (
+                {s.location}
+                <br />(
                 <a target="_blank" href={s.url}>
                   website
                 </a>
                 )
               </label>
-            </div>
-          );
-        })}
-      </div>
-      <div className={styles.calendarContainer}>
+            );
+          })}
+        </div>
         <div key="times">
           <div>&nbsp;</div>
           <div className={styles.times}>
@@ -64,7 +65,7 @@ export default function Calendar({ schedules }: Props) {
           "Thursday",
           "Friday",
           "Saturday",
-        ].map((day) => {
+        ].map((day, i) => {
           return (
             <div key={day} className={styles.day}>
               <div className={styles.dayName}>{day}</div>
@@ -83,16 +84,37 @@ export default function Calendar({ schedules }: Props) {
                             );
                           }
                         );
+                        let isCurrentTimeInterval =
+                          now.getDay() === i &&
+                          nowTotalMinutes > timeIncrement &&
+                          nowTotalMinutes - timeIncrement <= 15;
                         if (scheduleInterval == null) {
                           return (
                             <div
                               key={`${s.location}-${timeIncrement}`}
                               className={clsx(
                                 styles.timeIncrement,
-                                styles.emptyTimeIncrement
+                                styles.emptyTimeIncrement,
+                                isCurrentTimeInterval && "currentTimeInterval"
                               )}
                             >
-                              {" "}
+                              {/* not sure how to move these style tags up because I get an error*/}
+                              <style jsx>{`
+                                div.currentTimeInterval {
+                                  position: relative;
+                                }
+                                .currentTimeInterval::after {
+                                  content: "";
+                                  top: ${((nowTotalMinutes - timeIncrement) /
+                                    15) *
+                                  24}px;
+                                  left: 0;
+                                  width: 100%;
+                                  height: 100%;
+                                  position: absolute;
+                                  border-top: 1px solid red;
+                                }
+                              `}</style>
                             </div>
                           );
                         }
@@ -102,7 +124,8 @@ export default function Calendar({ schedules }: Props) {
                             className={clsx(
                               styles.timeIncrement,
                               "active",
-                              scheduleInterval[0] === timeIncrement && "first"
+                              scheduleInterval[0] === timeIncrement && "first",
+                              isCurrentTimeInterval && "currentTimeInterval"
                             )}
                           >
                             {scheduleInterval[0] === timeIncrement && (
@@ -114,9 +137,25 @@ export default function Calendar({ schedules }: Props) {
                                 </div>
                               </>
                             )}
+                            {/* not sure how to move these style tags up because I get an error*/}
                             <style jsx>{`
+                              div.currentTimeInterval {
+                                position: relative;
+                              }
+                              .currentTimeInterval::after {
+                                content: "";
+                                top: ${((nowTotalMinutes - timeIncrement) /
+                                  15) *
+                                24}px;
+                                left: 0;
+                                width: 100%;
+                                height: 100%;
+                                position: absolute;
+                                border-top: 1px solid red;
+                              }
                               .active {
                                 background-color: ${s.color};
+                                color: black;
                               }
                               .active.first {
                                 z-index: 1;

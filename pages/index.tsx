@@ -34,10 +34,35 @@ export default function Home({ schedules }) {
           <img src="/vercel.svg" alt="Vercel" className={styles.logo} />
         </a>
       </footer>
+      {/*
+      this came from chatgpt and it errors wtf
+      <div className="my-component">
+        {["yo"].map((item, index) => (
+          <p key={index} className="item">
+            {item}
+            <style jsx>{`
+              .item {
+                color: red;
+                font-size: 20px;
+              }
+            `}</style>
+          </p>
+        ))}
+
+        <style jsx>{`
+          .my-component {
+            background-color: #fafafa;
+            padding: 20px;
+            border-radius: 5px;
+          }
+        `}</style>
+      </div>
+*/}
 
       <style jsx>{`
         main {
           margin-top: 2rem;
+          margin-bottom: 2rem;
         }
         footer {
           width: 100%;
@@ -75,9 +100,14 @@ export default function Home({ schedules }) {
           font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
             Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
             sans-serif;
+          background-color: #272727;
+          color: #bcbcbc;
         }
         * {
           box-sizing: border-box;
+        }
+        a {
+          color: #7676ff;
         }
       `}</style>
     </div>
@@ -89,6 +119,7 @@ export async function getServerSideProps(context) {
   const schedules = await getSchedules();
   return {
     props: {
+      //schedules: [],
       schedules,
     },
   };
