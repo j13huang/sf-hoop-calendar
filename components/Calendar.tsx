@@ -22,41 +22,41 @@ export default function Calendar({ schedules }: Props) {
   let nowTotalMinutes = now.getHours() * 60 + now.getMinutes();
   return (
     <div className={styles.container}>
+      <div className={styles.checkboxes}>
+        {schedules.map((s) => {
+          return (
+            <label key={s.location} className={styles.checkbox}>
+              <input
+                type="checkbox"
+                checked={!!selectedLocations[s.location]}
+                onChange={() =>
+                  setLocations({
+                    ...selectedLocations,
+                    [s.location]: !selectedLocations[s.location],
+                  })
+                }
+              />
+              {s.location}
+              <br />(
+              <a target="_blank" href={s.url}>
+                website
+              </a>
+              )
+            </label>
+          );
+        })}
+      </div>
+      <div key="times">
+        <div>&nbsp;</div>
+        <div className={styles.times}>
+          {TIME_INCREMENTS.map((timeIncrement, i) => (
+            <div key={timeIncrement} className={styles.timeIncrement}>
+              {i % 4 === 0 ? minutesToTime(timeIncrement) : ""}
+            </div>
+          ))}
+        </div>
+      </div>
       <div className={styles.calendarContainer}>
-        <div className={styles.checkboxes}>
-          {schedules.map((s) => {
-            return (
-              <label key={s.location} className={styles.checkbox}>
-                <input
-                  type="checkbox"
-                  checked={!!selectedLocations[s.location]}
-                  onChange={() =>
-                    setLocations({
-                      ...selectedLocations,
-                      [s.location]: !selectedLocations[s.location],
-                    })
-                  }
-                />
-                {s.location}
-                <br />(
-                <a target="_blank" href={s.url}>
-                  website
-                </a>
-                )
-              </label>
-            );
-          })}
-        </div>
-        <div key="times">
-          <div>&nbsp;</div>
-          <div className={styles.times}>
-            {TIME_INCREMENTS.map((timeIncrement, i) => (
-              <div key={timeIncrement} className={styles.timeIncrement}>
-                {i % 4 === 0 ? minutesToTime(timeIncrement) : ""}
-              </div>
-            ))}
-          </div>
-        </div>
         {[
           "Sunday",
           "Monday",
@@ -158,7 +158,6 @@ export default function Calendar({ schedules }: Props) {
                                 color: black;
                               }
                               .active.first {
-                                z-index: 1;
                                 overflow-x: clip;
                                 padding: 4px;
                               }

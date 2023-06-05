@@ -1,6 +1,7 @@
 .container {
   margin-left: 4rem;
   margin-right: 4rem;
+  display: flex;
 }
 
 @media (max-width: 600px) {
@@ -22,10 +23,6 @@
   margin-bottom: 8px;
 }
 
-.calendarContainer {
-  display: flex;
-}
-
 .times {
   margin-top: -8px;
   margin-right: 4px;
@@ -39,9 +36,15 @@
     */
 }
 
+.calendarContainer {
+  display: flex;
+  overflow-x: scroll;
+  width: 100%;
+}
+
 .day {
   border: solid 1px #969696;
-  width: 200px;
+  width: 150px;
   flex-grow: 1;
   flex-shrink: 0;
   /*
@@ -50,11 +53,13 @@
 }
 
 .dayName {
+  /*
   position: sticky;
   top: 0;
-  z-index: 2;
+  ????z-index: 1;
   opacity: 0.9;
   border-bottom: 1px solid #969696;
+  */
 }
 
 .dayGymSchedules {
