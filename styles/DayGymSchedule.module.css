@@ -1,0 +1,15 @@
+.timeIncrement {
+  height: 24px;
+  /*
+    border-top: solid 1px darkgrey;
+    */
+}
+
+.dayGymSchedule {
+  flex: 1 1;
+  width: 0px;
+}
+
+.emptyTimeIncrement.timeIncrement:nth-child(4n + 1) {
+  border-top: solid 1px #969696;
+}

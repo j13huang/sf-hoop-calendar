@@ -1,48 +1,65 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import clsx from "clsx";
 import styles from "../styles/Calendar.module.css";
+import dayGymScheduleStyles from "../styles/DayGymSchedule.module.css";
 
-import CalendarDay, { TIME_INCREMENTS } from "./CalendarDay";
+import LocationCheckbox from "./LocationCheckbox";
+import DayGymSchedule from "./DayGymSchedule";
+import CalendarDay, { TIME_INCREMENTS } from "./DayGymSchedule";
 import { minutesToTime } from "../lib/time-utils";
 
 type Props = {
-  schedules: any[];
+  initialSelectedLocations: { [key: string]: boolean };
+  locationData: { location: string; url: string; color: string }[];
 };
 
-export default function Calendar({ schedules }: Props) {
-  const [selectedLocations, setLocations] = useState(
-    schedules.reduce((acc, s) => {
-      //console.log(k, v);
-      acc[s.location] = !!s.initiallySelected;
-      return acc;
-    }, {})
-  );
+export default function Calendar({
+  initialSelectedLocations,
+  locationData,
+}: Props) {
+  const [selectedLocations, setLocations] = useState(() => {
+    //console.log("hmm", initialSelectedLocations);
+    return initialSelectedLocations;
+  });
+
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
+
+    let cookieValue = Object.entries(selectedLocations).reduce(
+      (acc, [k, v]) => {
+        if (!!v) {
+          acc[k] = true;
+        }
+        return acc;
+      },
+      {}
+    );
+    document.cookie = `selectedLocations=${encodeURIComponent(
+      JSON.stringify(cookieValue)
+    )};max-age=${60 * 60 * 24 * 365}`;
+  }, [selectedLocations]);
 
   let now = new Date();
   let nowTotalMinutes = now.getHours() * 60 + now.getMinutes();
   return (
     <div className={styles.container}>
       <div className={styles.checkboxes}>
-        {schedules.map((s) => {
+        {locationData.map(({ location, url }) => {
           return (
-            <label key={s.location} className={styles.checkbox}>
-              <input
-                type="checkbox"
-                checked={!!selectedLocations[s.location]}
-                onChange={() =>
-                  setLocations({
-                    ...selectedLocations,
-                    [s.location]: !selectedLocations[s.location],
-                  })
-                }
-              />
-              {s.location}
-              <br />(
-              <a target="_blank" href={s.url}>
-                website
-              </a>
-              )
-            </label>
+            <LocationCheckbox
+              key={location}
+              location={location}
+              url={url}
+              enabled={!!selectedLocations[location]}
+              onChange={() => {
+                setLocations({
+                  ...selectedLocations,
+                  [location]: !selectedLocations[location],
+                });
+              }}
+            />
           );
         })}
       </div>
@@ -50,7 +67,10 @@ export default function Calendar({ schedules }: Props) {
         <div>&nbsp;</div>
         <div className={styles.times}>
           {TIME_INCREMENTS.map((timeIncrement, i) => (
-            <div key={timeIncrement} className={styles.timeIncrement}>
+            <div
+              key={timeIncrement}
+              className={dayGymScheduleStyles.timeIncrement}
+            >
               {i % 4 === 0 ? minutesToTime(timeIncrement) : ""}
             </div>
           ))}
@@ -70,102 +90,19 @@ export default function Calendar({ schedules }: Props) {
             <div key={day} className={styles.day}>
               <div className={styles.dayName}>{day}</div>
               <div className={styles.dayGymSchedules}>
-                {schedules.map((s) => {
-                  if (!selectedLocations[s.location]) {
+                {locationData.map(({ location, color }) => {
+                  if (!selectedLocations[location]) {
                     return null;
                   }
                   return (
-                    <div key={s.location} className={styles.dayGymSchedule}>
-                      {TIME_INCREMENTS.map((timeIncrement) => {
-                        let scheduleInterval = s.timeIntervals[day].find(
-                          (s) => {
-                            return (
-                              timeIncrement >= s[0] && timeIncrement < s[1]
-                            );
-                          }
-                        );
-                        let isCurrentTimeInterval =
-                          now.getDay() === i &&
-                          nowTotalMinutes > timeIncrement &&
-                          nowTotalMinutes - timeIncrement <= 15;
-                        if (scheduleInterval == null) {
-                          return (
-                            <div
-                              key={`${s.location}-${timeIncrement}`}
-                              className={clsx(
-                                styles.timeIncrement,
-                                styles.emptyTimeIncrement,
-                                isCurrentTimeInterval && "currentTimeInterval"
-                              )}
-                            >
-                              {/* not sure how to move these style tags up because I get an error*/}
-                              <style jsx>{`
-                                div.currentTimeInterval {
-                                  position: relative;
-                                }
-                                .currentTimeInterval::after {
-                                  content: "";
-                                  top: ${((nowTotalMinutes - timeIncrement) /
-                                    15) *
-                                  24}px;
-                                  left: 0;
-                                  width: 100%;
-                                  height: 100%;
-                                  position: absolute;
-                                  border-top: 1px solid red;
-                                }
-                              `}</style>
-                            </div>
-                          );
-                        }
-                        return (
-                          <div
-                            key={`${s.location}-${timeIncrement}`}
-                            className={clsx(
-                              styles.timeIncrement,
-                              "active",
-                              scheduleInterval[0] === timeIncrement && "first",
-                              isCurrentTimeInterval && "currentTimeInterval"
-                            )}
-                          >
-                            {scheduleInterval[0] === timeIncrement && (
-                              <>
-                                <div>{s.location}</div>
-                                <div>
-                                  {minutesToTime(scheduleInterval[0])} -{" "}
-                                  {minutesToTime(scheduleInterval[1])}
-                                </div>
-                              </>
-                            )}
-                            {/* not sure how to move these style tags up because I get an error*/}
-                            <style jsx>{`
-                              div.currentTimeInterval {
-                                position: relative;
-                              }
-                              .currentTimeInterval::after {
-                                content: "";
-                                top: ${((nowTotalMinutes - timeIncrement) /
-                                  15) *
-                                24}px;
-                                left: 0;
-                                width: 100%;
-                                height: 100%;
-                                position: absolute;
-                                border-top: 1px solid red;
-                              }
-                              .active {
-                                background-color: ${s.color};
-                                color: black;
-                              }
-                              .active.first {
-                                overflow-x: clip;
-                                padding: 4px;
-                              }
-                            `}</style>
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <DayGymSchedule
+                      key={location}
+                      location={location}
+                      color={color}
+                      day={day}
+                      isToday={now.getDay() === i}
+                      nowTotalMinutes={nowTotalMinutes}
+                    />
                   );
                 })}
               </div>
@@ -173,7 +110,6 @@ export default function Calendar({ schedules }: Props) {
           );
         })}
       </div>
-      <div>{/*JSON.stringify(schedules, null, 2)*/}</div>
     </div>
   );
 }

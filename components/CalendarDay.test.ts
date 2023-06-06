@@ -1,4 +1,4 @@
-import { calculateTimeIntervalsForGroup } from "./CalendarDay";
+import { calculateTimeIntervalsForGroup } from "./DayGymSchedule";
 
 describe("calculateTimeIntervalsForGroup", () => {
   it("calculates groups unique gym counts properly", () => {

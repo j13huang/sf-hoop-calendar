@@ -3,106 +3,118 @@ import { extractBernalSchedule } from "./scrapers/bernal";
 import { extractUpperNoeSchedule } from "./scrapers/upper-noe";
 import { DATE_WORDS, TIME_REGEX, timeToMinutes } from "./time-utils";
 
-const REC_CENTERS: Array<{
-  location: string;
-  url: string;
-  initiallySelected: boolean;
-  // css color for frontend
-  color: string;
-  // specific string matching filter for gym-specific customization
-  activityFilter?: string;
-  extract: (body: string) => string[];
-}> = [
-  {
+const REC_CENTERS: {
+  [key: string]: {
+    location: string;
+    url: string;
+    // css color for frontend
+    color: string;
+    // specific string matching filter for gym-specific customization
+    activityFilter?: string;
+    extract: (body: string) => string[];
+  };
+} = {
+  Sunset: {
     location: "Sunset",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Sunset-Rec-Center-110",
     color: "#99ccff",
-    initiallySelected: true,
     extract: extractSunsetSchedule,
   },
-  {
+  "Glen Canyon Park": {
     location: "Glen Canyon Park",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Glen-Park-Rec-Center-89",
     color: "lightgreen",
-    initiallySelected: true,
     extract: extractSunsetSchedule,
   },
-  {
+  "Hamilton Rec": {
     location: "Hamilton Rec",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Hamilton-Rec-Center-93",
     color: "orange",
-    initiallySelected: false,
     extract: extractSunsetSchedule,
   },
-  {
+  "Minnie Lovie Ward": {
     location: "Minnie Lovie Ward",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Minnie-Love-Ward-Recreation-Center-97",
     color: "mediumpurple",
-    initiallySelected: false,
     extract: extractSunsetSchedule,
   },
-  {
+  "Upper Noe": {
     location: "Upper Noe",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Upper-Noe-Recreation-Center-112",
     color: "#52efd8",
     activityFilter: "adult basketball",
-    initiallySelected: false,
     extract: extractUpperNoeSchedule,
   },
-  {
+  "Bernal Heights": {
     location: "Bernal Heights",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Bernal-Heights-Recreation-Center-83",
     color: "yellowgreen",
-    initiallySelected: false,
     extract: extractBernalSchedule,
   },
-  {
+  "Potrero Hill": {
     location: "Potrero Hill",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Potrero-Hill-Rec-Center-275",
     color: "#ffff5f",
-    initiallySelected: false,
     extract: extractSunsetSchedule,
   },
   /*
   cheerio parser not working
-  {
+     "Eureka Valley": {
     location: "Eureka Valley",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Eureka-Valley-Recreation-Center-86",
-    initiallySelected: false,
       color: "red",
     extract: extractSunsetSchedule,
   },
   */
-];
+};
+
+export function getLocationData() {
+  return Object.values(REC_CENTERS).map((rc) => {
+    // omit extract function from return value
+    const { extract, ...result }: any = rc;
+    //console.log(result);
+    return result;
+  });
+}
 
 export async function getSchedules() {
   let schedules = await Promise.all(
-    REC_CENTERS.map(async (rc) => {
-      const response = await fetch(rc.url);
-      let body = await response.text();
-      while (body.includes("An error has occurred")) {
-        const response = await fetch(rc.url);
-        body = await response.text();
-      }
-      //console.log(rc, body.length);
-
+    Object.keys(REC_CENTERS).map(async (location) => {
+      let schedule = getSchedule(location);
       // omit extract function from return value
-      const { extract, ...result }: any = rc;
-      let textSchedule = rc.extract(body);
-      //console.log(textSchedule);
-      result.timeIntervals = parse(
-        textSchedule,
-        rc.activityFilter || "basketball"
-      );
-      //console.log("done", result.timeIntervals);
-      //if (result.timeIntervals.Tuesday.length === 0) {
-      //console.log(rc, body);
-      //}
-      return result;
+      const { extract, ...result }: any = REC_CENTERS[location];
+      return {
+        ...result,
+        timeIntervals: schedule,
+      };
     })
   );
   //console.log(schedules);
   return schedules;
+}
+
+export async function getSchedule(location: string) {
+  let rc = REC_CENTERS[location];
+  const response = await fetch(rc.url);
+  let body = await response.text();
+  while (body.includes("An error has occurred")) {
+    const response = await fetch(rc.url);
+    body = await response.text();
+  }
+  //console.log(rc, body.length);
+
+  // omit extract function from return value
+  //const { extract, ...result }: any = rc;
+  //let textSchedule = rc.extract(body);
+  //console.log(textSchedule);
+  //result.timeIntervals = parse(textSchedule, rc.activityFilter || "basketball");
+  //console.log("done", result.timeIntervals);
+  //if (result.timeIntervals.Tuesday.length === 0) {
+  //console.log(rc, body);
+  //}
+  //return result;
+  let textSchedule = rc.extract(body);
+  return parse(textSchedule, rc.activityFilter || "basketball");
 }
 
 // export for testing

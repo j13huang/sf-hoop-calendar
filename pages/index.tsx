@@ -1,10 +1,12 @@
+import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { getSchedules } from "../lib/schedules";
+import { getLocationData, getSchedules } from "../lib/schedules";
 import Calendar from "../components/Calendar";
 import styles from "../styles/Home.module.css";
 
-export default function Home({ schedules }) {
+export default function Home({ initialSelectedLocations, locationData }) {
+  //console.log("ayy", initialSelectedLocations);
   return (
     <div className={styles.container}>
       <Head>
@@ -13,7 +15,10 @@ export default function Home({ schedules }) {
       </Head>
 
       <main>
-        <Calendar schedules={schedules}></Calendar>
+        <Calendar
+          initialSelectedLocations={initialSelectedLocations}
+          locationData={locationData}
+        ></Calendar>
 
         {/*
         <h1 className={styles.title}>
@@ -114,13 +119,21 @@ export default function Home({ schedules }) {
   );
 }
 
-export async function getServerSideProps(context) {
-  //console.log(context);
-  const schedules = await getSchedules();
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  //console.log(context.req.cookies);
+  const locationData = getLocationData();
+  let initialSelectedLocations = { Sunset: true, "Glen Canyon Park": true };
+  if (context.req.cookies.selectedLocations) {
+    //console.log("here?", context.req.cookies.selectedLocations);
+    initialSelectedLocations = JSON.parse(
+      context.req.cookies.selectedLocations
+    );
+  }
+  //console.log("getServerSideProps", initialSelectedLocations);
   return {
     props: {
-      //schedules: [],
-      schedules,
+      initialSelectedLocations,
+      locationData,
     },
   };
-}
+};
