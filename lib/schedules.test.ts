@@ -1,4 +1,9 @@
-import { parse, tokenize, guessAMPMPeriod } from "./schedules";
+import {
+  parse,
+  tokenize,
+  guessAMPMPeriod,
+  standardizedExtractedText,
+} from "./schedules";
 
 describe("parse", () => {
   it("should parse days correctly for all activities", () => {
@@ -154,6 +159,76 @@ describe("parse", () => {
   });
 });
 
+describe("standardizedExtractedText", () => {
+  it("no-ops for lines where the entire day schedule is on one line", () => {
+    const lines = [
+      "Tuesday: 6:00PM - 7:30PM Adult Basketball:   ",
+      "Wednesday:  2:00PM - 5:00PM Youth Basketball    10:00AM - 2:00 PM Adult Basketball   ",
+      "Thursday: 5:30PM - 7:30PM Adult Basketball:   2:00PM - 5:00PM Youth Basketball:   ",
+      "Friday:  2:00PM - 3:30PM Youth Basketball    10:00AM - 2:00PM Adult Basketball   ",
+      "Saturday:  Resumes in March   ",
+    ];
+    const expected = [
+      "Tuesday: 6:00PM - 7:30PM Adult Basketball:   ",
+      "Wednesday:  2:00PM - 5:00PM Youth Basketball    10:00AM - 2:00 PM Adult Basketball   ",
+      "Thursday: 5:30PM - 7:30PM Adult Basketball:   2:00PM - 5:00PM Youth Basketball:   ",
+      "Friday:  2:00PM - 3:30PM Youth Basketball    10:00AM - 2:00PM Adult Basketball   ",
+      "Saturday:  Resumes in March   ",
+    ];
+
+    const result = standardizedExtractedText(lines);
+    //console.log(JSON.stringify(result, null, 2));
+    expect(result).toEqual(expected);
+  });
+
+  it("joins lines where the day is specified on its own line", () => {
+    const lines = [
+      "This facility offers open gym hours for pickup basketball, pickleball, volleyball, and more! Contact Facility Coordinator to confirm times.",
+      "",
+      "Tuesday:",
+      "",
+      "Adult Basketball:",
+      " 6:00PM - 7:30PM",
+      "",
+      "Wednesday:",
+      "",
+      "Adult Basketball: 10:00AM - 2:00 PM",
+      "",
+      "Youth Basketball: 2:00PM - 5:00PM",
+      "",
+      "Thursday: ",
+      "",
+      "Youth Basketball:",
+      " 2:00PM - 5:00PM",
+      "",
+      "Adult Basketball:",
+      " 5:30PM - 7:30PM",
+      "",
+      "Friday: ",
+      "",
+      "Adult Basketball: 10:00AM - 2:00PM",
+      "",
+      "Youth Basketball: 2:00PM - 3:30PM",
+      "",
+      "Saturday:",
+      "",
+      "Resumes in March",
+      "Hours subject to change.",
+    ];
+    const expected = [
+      "Tuesday::  Adult Basketball: 6:00PM - 7:30PM ",
+      "Wednesday::  Adult Basketball: 10:00AM - 2:00 PM  Youth Basketball: 2:00PM - 5:00PM ",
+      "Thursday::  Youth Basketball: 2:00PM - 5:00PM  Adult Basketball: 5:30PM - 7:30PM ",
+      "Friday::  Adult Basketball: 10:00AM - 2:00PM  Youth Basketball: 2:00PM - 3:30PM ",
+      "Saturday::  Resumes in March Hours subject to change.",
+    ];
+
+    const result = standardizedExtractedText(lines);
+    //console.log(JSON.stringify(result, null, 2));
+    expect(result).toEqual(expected);
+  });
+});
+
 describe("tokenize", () => {
   it("should tokenize strings properly", () => {
     const schedule =
@@ -185,13 +260,13 @@ describe("tokenize", () => {
     ];
 
     const result = tokenize(schedule);
-    console.log(result);
+    //console.log(result);
     expect(result).toEqual(expected);
   });
 });
 
 describe("guessAMPMPeriod", () => {
-  it("ignores properly formatted times", () => {
+  it("no-ops properly formatted times", () => {
     let tests = [
       {
         input: ["10:00am", "2:00pm"],

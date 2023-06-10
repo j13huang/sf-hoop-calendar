@@ -1,7 +1,7 @@
 import { extractSunsetSchedule } from "./scrapers/sunset";
 import { extractBernalSchedule } from "./scrapers/bernal";
 import { extractUpperNoeSchedule } from "./scrapers/upper-noe";
-import { DATE_WORDS, TIME_REGEX, timeToMinutes } from "./time-utils";
+import { DATE_WORDS, parseTime, timeToMinutes } from "./time-utils";
 
 const REC_CENTERS: {
   [key: string]: {
@@ -77,7 +77,8 @@ export function getLocationData() {
   });
 }
 
-export async function getSchedules() {
+// currently unused. only used for potential SSR implementation
+async function getSchedules() {
   let schedules = await Promise.all(
     Object.keys(REC_CENTERS).map(async (location) => {
       let schedule = getSchedule(location);
@@ -114,7 +115,45 @@ export async function getSchedule(location: string) {
   //}
   //return result;
   let textSchedule = rc.extract(body);
-  return parse(textSchedule, rc.activityFilter || "basketball");
+  //console.log(textSchedule);
+  let cleaned = standardizedExtractedText(textSchedule);
+  //console.log("cleaned", cleaned);
+  return parse(cleaned, rc.activityFilter || "basketball");
+}
+
+// some schedules have the days on the same lines as their times
+// some schedules have the days on preceding lines
+// standardized lines to make it so that all schedules have the day names on the same line (e.g. no-op the first case)
+// day names should be followed by a ":"
+// export for testing
+export function standardizedExtractedText(lines: string[]) {
+  let dayIndexes = [];
+  lines.forEach((l, i) => {
+    if (
+      Object.keys(DATE_WORDS).find((dw) => l.toLocaleLowerCase().startsWith(dw))
+    ) {
+      dayIndexes.push(i);
+    }
+  });
+
+  let results = [];
+  for (let i = 0; i < dayIndexes.length; i++) {
+    let left = dayIndexes[i];
+    let right = dayIndexes[i + 1];
+    // make sure if day names are on individual lines that they end with a ":"
+    if ((right == null && left < lines.length - 1) || right > left + 1) {
+      results.push(
+        [
+          lines[left].trim() + ":",
+          ...lines.slice(left + 1, right).map((l) => l.trim()),
+        ].join(" ")
+      );
+      continue;
+    }
+    results.push(lines.slice(left, right).join(" "));
+  }
+
+  return results;
 }
 
 // export for testing
@@ -138,11 +177,11 @@ export function parse(textSchedule: string[], activityFilter?: string) {
       return;
     }
 
-    //console.log(day, DATE_WORDS[day], times, t);
     const tokenized = tokenize(schedule);
-    //console.log("tokenized", tokenized);
-    const parsedTimes = formatTokens(tokenized, activityFilter);
-    result[DATE_WORDS[day]].push(...parsedTimes);
+    //console.log("tokenized", day, tokenized);
+    const processedSchedule = processTokens(tokenized, activityFilter);
+    //console.log("parsed", processedSchedule);
+    result[DATE_WORDS[day]].push(...processedSchedule);
   });
   return result;
 }
@@ -150,7 +189,11 @@ export function parse(textSchedule: string[], activityFilter?: string) {
 // export for testing
 export function tokenize(schedule: string) {
   const result = [];
-  const tokens = schedule.replace(/\s+/g, " ").split(" ");
+  const tokens = schedule
+    // 	"\u45" and 	"\u2013"
+    .replace(/(-|–)/g, " - ")
+    .replace(/\s+/g, " ")
+    .split(" ");
   let chunk = [];
   let i = 0;
   //console.log(tokens);
@@ -162,16 +205,16 @@ export function tokenize(schedule: string) {
       continue;
     }
 
-    if (!!token.match(TIME_REGEX)) {
-      if (chunk.length > 0 && !chunk[0].match(TIME_REGEX)) {
+    let parsedTime = parseTime(token);
+    if (parsedTime) {
+      if (chunk.length > 0 && !parseTime(chunk[0])) {
         // the current chunk contains a label (e.g. "Basketball") and this token is a time so we can start with a new chunk
         //console.log("labelled", chunk, token);
         result.push(chunk);
         chunk = [];
       }
-      chunk.push(token);
-    } else if (token === "-" || token === "–") {
-      // 	"\u45" and 	"\u2013"
+      chunk.push(parsedTime);
+    } else if (token === "-") {
       // '-' should indicate separator between two times, so just add the next time and skip
       i++;
       chunk.push(tokens[i]);
@@ -186,11 +229,16 @@ export function tokenize(schedule: string) {
 
   result.push(chunk);
   //console.log(result);
+
+  if (result.length > 0 && !parseTime(result[0][0])) {
+    // we want to have activities follow times
+    result.reverse();
+  }
   return result;
 }
 
 // adds AM/PM period indicators and joins descriptions together with times
-function formatTokens(tokenGroups: string[][], activityFilter?: string) {
+function processTokens(tokenGroups: string[][], activityFilter?: string) {
   let result = [];
   let intervals = [];
   for (let tokenGroup of tokenGroups) {
@@ -199,27 +247,24 @@ function formatTokens(tokenGroups: string[][], activityFilter?: string) {
       continue;
     }
 
-    //console.log("hey", tokenGroup[0].match(TIME_REGEX));
-    if (!tokenGroup[0].match(TIME_REGEX)) {
-      if (
-        activityFilter &&
-        !matchesActivityFilter(tokenGroup, activityFilter)
-      ) {
-        intervals = [];
-        continue;
-      }
+    //console.log("hey", parseTime(tokenGroup[0]));
+    if (parseTime(tokenGroup[0])) {
+      intervals.push(guessAMPMPeriod(tokenGroup[0], tokenGroup[1]));
+      continue;
+    }
 
-      intervals.forEach((interval) => {
-        result.push([
-          ...interval.map((i) => timeToMinutes(i)),
-          activityFilter || tokenGroup.join(" "),
-        ]);
-      });
+    if (activityFilter && !matchesActivityFilter(tokenGroup, activityFilter)) {
       intervals = [];
       continue;
     }
 
-    intervals.push(guessAMPMPeriod(tokenGroup[0], tokenGroup[1]));
+    intervals.forEach((interval) => {
+      result.push([
+        ...interval.map((i) => timeToMinutes(i)),
+        activityFilter || tokenGroup.join(" "),
+      ]);
+    });
+    intervals = [];
   }
 
   return result;
@@ -230,6 +275,7 @@ function matchesActivityFilter(tokenGroup: string[], activityFilter: string) {
     return tokenGroup.join(" ").includes(activityFilter);
   }
 
+  //return !!tokenGroup.find((tg) => tg.startsWith(activityFilter));
   return tokenGroup[0].includes(activityFilter);
 }
 

@@ -25,9 +25,20 @@ export function extractSunsetSchedule(body): string[] {
       .closest("h2.subhead1");
   }
   //console.log("yep", $.html(content));
+  content
+    .find("div")
+    .first()
+    .find("div")
+    .first()
+    .children()
+    .each((i, e) => {
+      //console.log("yo", $(e).text());
+      lines.push($(e).text());
+    });
   content.find("p").each((i, e) => {
     lines.push($(e).text());
   });
+  //console.log(lines);
 
   return lines;
   //console.log(times);

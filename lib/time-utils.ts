@@ -1,35 +1,42 @@
+// upper and lowercase keys are added at runtime below
 export const DATE_WORDS = {
   Sun: "Sunday",
   Sunday: "Sunday",
-  sun: "Sunday",
-  sunday: "Sunday",
   Mon: "Monday",
   Monday: "Monday",
-  mon: "Monday",
-  monday: "Monday",
   Tue: "Tuesday",
   Tuesday: "Tuesday",
-  tue: "Tuesday",
-  tuesday: "Tuesday",
   Wed: "Wednesday",
   Wednesday: "Wednesday",
-  wed: "Wednesday",
-  wednesday: "Wednesday",
   Thu: "Thursday",
   Thursday: "Thursday",
-  thu: "Thursday",
-  thursday: "Thursday",
   Fri: "Friday",
   Friday: "Friday",
-  fri: "Friday",
-  friday: "Friday",
   Sat: "Saturday",
   Saturday: "Saturday",
-  sat: "Saturday",
-  saturday: "Saturday",
 };
 
-export const TIME_REGEX = /\d{1,2}:\d{2}(?:am|pm)?/i;
+Object.keys(DATE_WORDS).forEach((dw) => {
+  DATE_WORDS[dw.toLocaleLowerCase()] = DATE_WORDS[dw];
+  DATE_WORDS[dw.toLocaleUpperCase()] = DATE_WORDS[dw];
+});
+
+export const TIME_REGEX = /\d{1,2}:\d{2}(am|pm)?/i;
+export const SHORT_TIME_REGEX = /(1[0-2]|[1-9])(am|pm)/i;
+
+// returns properly formatted time version of time if time
+export function parseTime(time: string) {
+  if (time.match(TIME_REGEX)) {
+    return time;
+  }
+
+  let shortMatch = time.match(SHORT_TIME_REGEX);
+  if (shortMatch) {
+    return `${shortMatch[1]}:00${shortMatch[2]}`;
+  }
+
+  return null;
+}
 
 // convert to minutes from midnight
 export function timeToMinutes(time: string): number {
@@ -51,18 +58,4 @@ export function minutesToTime(minutes: number) {
   let h = Math.floor(minutes / 60);
   let m = minutes % 60;
   return `${h}:${m.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`;
-}
-
-// only for testing
-export function stripTimeFormattingReadable(time: string): number {
-  let number = 0;
-  if (time.endsWith("pm")) {
-    number += 1200;
-  }
-
-  let nums = time.split(":");
-  number += (nums[0] === "12" ? 0 : parseInt(nums[0])) * 100;
-  number += parseInt(nums[1]);
-
-  return number;
 }
