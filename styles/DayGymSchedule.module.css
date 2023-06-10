@@ -5,6 +5,12 @@
     */
 }
 
+@media (max-width: 600px) {
+  .timeIncrement {
+    height: 16px;
+  }
+}
+
 .dayGymSchedule {
   flex: 1 1;
   width: 0px;
