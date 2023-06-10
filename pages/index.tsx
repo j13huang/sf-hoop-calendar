@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { getLocationData, getSchedules } from "../lib/schedules";
+import { getLocationData } from "../lib/schedules";
 import Calendar from "../components/Calendar";
 import styles from "../styles/Home.module.css";
 
