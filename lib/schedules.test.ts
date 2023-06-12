@@ -2,7 +2,7 @@ import {
   parse,
   tokenize,
   guessAMPMPeriod,
-  standardizedExtractedText,
+  standardizedScrapedText,
 } from "./schedules";
 
 describe("parse", () => {
@@ -183,7 +183,7 @@ describe("parse", () => {
   });
 });
 
-describe("standardizedExtractedText", () => {
+describe("standardizedScrapedText", () => {
   it("no-ops for lines where the entire day schedule is on one line", () => {
     const lines = [
       "Tuesday: 6:00PM - 7:30PM Adult Basketball:   ",
@@ -200,7 +200,7 @@ describe("standardizedExtractedText", () => {
       "saturday:  resumes in march   ",
     ];
 
-    const result = standardizedExtractedText(lines);
+    const result = standardizedScrapedText(lines);
     //console.log(JSON.stringify(result, null, 2));
     expect(result).toEqual(expected);
   });
@@ -240,14 +240,14 @@ describe("standardizedExtractedText", () => {
       "Hours subject to change.",
     ];
     const expected = [
-      "tuesday::  adult basketball: 6:00pm - 7:30pm ",
-      "wednesday::  adult basketball: 10:00am - 2:00 pm  youth basketball: 2:00pm - 5:00pm ",
-      "thursday::  youth basketball: 2:00pm - 5:00pm  adult basketball: 5:30pm - 7:30pm ",
-      "friday::  adult basketball: 10:00am - 2:00pm  youth basketball: 2:00pm - 3:30pm ",
-      "saturday::  resumes in march hours subject to change.",
+      "tuesday:: adult basketball: 6:00pm - 7:30pm",
+      "wednesday:: adult basketball: 10:00am - 2:00 pm youth basketball: 2:00pm - 5:00pm",
+      "thursday:: youth basketball: 2:00pm - 5:00pm adult basketball: 5:30pm - 7:30pm",
+      "friday:: adult basketball: 10:00am - 2:00pm youth basketball: 2:00pm - 3:30pm",
+      "saturday:: resumes in march hours subject to change.",
     ];
 
-    const result = standardizedExtractedText(lines);
+    const result = standardizedScrapedText(lines);
     //console.log(JSON.stringify(result, null, 2));
     expect(result).toEqual(expected);
   });

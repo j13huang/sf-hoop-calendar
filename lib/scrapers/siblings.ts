@@ -1,6 +1,6 @@
 import cheerio from "cheerio";
 
-export function extractBernalSchedule(body): string[] {
+export function siblingsScraper(body): string[] {
   const $ = cheerio.load(body);
   const lines = [];
 

@@ -33,14 +33,25 @@ export function extractSunsetSchedule(body): string[] {
     .children()
     .each((i, e) => {
       //console.log("yo", $(e).text());
+      $(e)
+        .find("br")
+        .each((i, br) => {
+          $(br).replaceWith("<span>&nbsp;</span>");
+        });
       lines.push($(e).text());
     });
   content.find("p").each((i, e) => {
+    // <br>s get collapsed when using .text() so turn them into spaces
+    $(e)
+      .find("br")
+      .each((i, br) => {
+        $(br).replaceWith("<span>&nbsp;</span>");
+      });
     lines.push($(e).text());
   });
   //console.log(lines);
 
-  return lines;
+  return lines.map((l) => l.trim());
   //console.log(times);
   //let result = parse(times, activityFilter);
   //console.log("done", result);

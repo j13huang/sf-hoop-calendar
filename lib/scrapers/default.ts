@@ -1,9 +1,9 @@
 import cheerio from "cheerio";
-import { DATE_WORDS, TIME_REGEX } from "../time-utils";
 
-// upper noe's schedule formatting is a little weird so we want to process the text so that it looks like all the other websites
-export function extractUpperNoeSchedule(body): string[] {
+export function defaultScraper(body): string[] {
   const $ = cheerio.load(body);
+  const lines = [];
+
   //let yo = $("#isPasted").parent("h2.subhead1");
 
   let heading = $('h2.subhead1:contains("Open Gym Hours")');
@@ -25,15 +25,35 @@ export function extractUpperNoeSchedule(body): string[] {
       .closest("h2.subhead1");
   }
   //console.log("yep", $.html(content));
-  let lines = [];
-  content.find("p").each((i, p) => {
-    $(p)
-      .contents()
-      .each((j, e) => {
-        lines.push($(e).text());
+  content
+    .find("div")
+    .first()
+    .find("div")
+    .first()
+    .children()
+    .each((i, e) => {
+      //console.log("yo", $(e).text());
+      $(e)
+        .find("br")
+        .each((i, br) => {
+          $(br).replaceWith("<span>&nbsp;</span>");
+        });
+      lines.push($(e).text());
+    });
+  content.find("p").each((i, e) => {
+    // <br>s get collapsed when using .text() so turn them into spaces
+    $(e)
+      .find("br")
+      .each((i, br) => {
+        $(br).replaceWith("<span>&nbsp;</span>");
       });
+    lines.push($(e).text());
   });
-
   //console.log(lines);
+
   return lines.map((l) => l.trim());
+  //console.log(times);
+  //let result = parse(times, activityFilter);
+  //console.log("done", result);
+  //return result;
 }

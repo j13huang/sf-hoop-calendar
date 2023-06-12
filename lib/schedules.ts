@@ -1,7 +1,8 @@
-import { extractSunsetSchedule } from "./scrapers/sunset";
-import { extractBernalSchedule } from "./scrapers/bernal";
-import { extractUpperNoeSchedule } from "./scrapers/upper-noe";
+import { defaultScraper } from "./scrapers/default";
+import { siblingsScraper } from "./scrapers/siblings";
 import { DATE_WORDS, parseTime, timeToMinutes } from "./time-utils";
+
+const SCRAPERS = [defaultScraper, siblingsScraper];
 
 const REC_CENTERS: {
   [key: string]: {
@@ -11,51 +12,43 @@ const REC_CENTERS: {
     color: string;
     // specific string matching filter for gym-specific customization
     activityFilters?: string[];
-    extract: (body: string) => string[];
   };
 } = {
   Sunset: {
     location: "Sunset",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Sunset-Rec-Center-110",
     color: "#99ccff",
-    extract: extractSunsetSchedule,
   },
   "Glen Canyon Park": {
     location: "Glen Canyon Park",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Glen-Park-Rec-Center-89",
     color: "lightgreen",
-    extract: extractSunsetSchedule,
   },
   "Hamilton Rec": {
     location: "Hamilton Rec",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Hamilton-Rec-Center-93",
     color: "orange",
-    extract: extractSunsetSchedule,
   },
   "Minnie Lovie Ward": {
     location: "Minnie Lovie Ward",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Minnie-Love-Ward-Recreation-Center-97",
     color: "mediumpurple",
-    extract: extractSunsetSchedule,
   },
   "Upper Noe": {
     location: "Upper Noe",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Upper-Noe-Recreation-Center-112",
     color: "#52efd8",
     activityFilters: ["adult basketball"],
-    extract: extractUpperNoeSchedule,
   },
   "Bernal Heights": {
     location: "Bernal Heights",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Bernal-Heights-Recreation-Center-83",
     color: "yellowgreen",
-    extract: extractBernalSchedule,
   },
   "Potrero Hill": {
     location: "Potrero Hill",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Potrero-Hill-Rec-Center-275",
     color: "#ffff5f",
-    extract: extractSunsetSchedule,
   },
   //cheerio parser not working
   "Eureka Valley": {
@@ -63,17 +56,11 @@ const REC_CENTERS: {
     url: "https://sfrecpark.org/Facilities/Facility/Details/Eureka-Valley-Recreation-Center-86",
     color: "#ee5959",
     activityFilters: ["basketball", "drop-in basketball"],
-    extract: extractBernalSchedule,
   },
 };
 
 export function getLocationData() {
-  return Object.values(REC_CENTERS).map((rc) => {
-    // omit extract function from return value
-    const { extract, ...result }: any = rc;
-    //console.log(result);
-    return result;
-  });
+  return Object.values(REC_CENTERS);
 }
 
 // currently unused. only used for potential SSR implementation
@@ -81,10 +68,8 @@ async function getSchedules() {
   let schedules = await Promise.all(
     Object.keys(REC_CENTERS).map(async (location) => {
       let schedule = getSchedule(location);
-      // omit extract function from return value
-      const { extract, ...result }: any = REC_CENTERS[location];
       return {
-        ...result,
+        ...REC_CENTERS[location],
         timeIntervals: schedule,
       };
     })
@@ -101,21 +86,30 @@ export async function getSchedule(location: string) {
     const response = await fetch(rc.url);
     body = await response.text();
   }
-  //console.log(rc, body.length);
 
-  // omit extract function from return value
-  //const { extract, ...result }: any = rc;
-  //let textSchedule = rc.extract(body);
+  let textSchedule: string[] = [];
+  let maxFound = 0;
+  for (let scraper of SCRAPERS) {
+    let scraped = scraper(body);
+    //console.log(scraped);
+    let dateWordsCount = Object.keys(DATE_WORDS).reduce((count, dateWord) => {
+      if (
+        scraped.find((line) => line.toLocaleLowerCase().startsWith(dateWord))
+      ) {
+        return count + 1;
+      }
+      return count;
+    }, 0);
+    //console.log(dateWordsCount, standardizedScrapedText(scraped));
+    if (dateWordsCount > maxFound) {
+      //console.log(scraped);
+      textSchedule = scraped;
+      maxFound = dateWordsCount;
+      //break;
+    }
+  }
   //console.log(textSchedule);
-  //result.timeIntervals = parse(textSchedule, rc.activityFilter || "basketball");
-  //console.log("done", result.timeIntervals);
-  //if (result.timeIntervals.Tuesday.length === 0) {
-  //console.log(rc, body);
-  //}
-  //return result;
-  let textSchedule = rc.extract(body);
-  //console.log(textSchedule);
-  let cleaned = standardizedExtractedText(textSchedule);
+  let cleaned = standardizedScrapedText(textSchedule);
   //console.log("cleaned", cleaned);
   return parse(cleaned, rc.activityFilters || ["basketball"]);
 }
@@ -125,8 +119,11 @@ export async function getSchedule(location: string) {
 // standardized lines to make it so that all schedules have the day names on the same line (e.g. no-op the first case)
 // day names should be followed by a ":"
 // export for testing
-export function standardizedExtractedText(lines: string[]) {
+export function standardizedScrapedText(rawLines: string[]) {
   let dayIndexes = [];
+  let lines = rawLines
+    .filter((l) => l.trim() !== "")
+    .map((l) => l.toLocaleLowerCase());
   lines.forEach((l, i) => {
     if (
       Object.keys(DATE_WORDS).find((dw) => l.toLocaleLowerCase().startsWith(dw))
@@ -135,25 +132,21 @@ export function standardizedExtractedText(lines: string[]) {
     }
   });
 
-  let lowercaseLines = lines.map((l) => l.toLocaleLowerCase());
   let results = [];
   for (let i = 0; i < dayIndexes.length; i++) {
     let left = dayIndexes[i];
     let right = dayIndexes[i + 1];
     // make sure if day names are on individual lines that they end with a ":"
-    if (
-      (right == null && left < lowercaseLines.length - 1) ||
-      right > left + 1
-    ) {
+    if ((right == null && left < lines.length - 1) || right > left + 1) {
       results.push(
         [
-          lowercaseLines[left].trim() + ":",
-          ...lowercaseLines.slice(left + 1, right).map((l) => l.trim()),
+          lines[left].trim() + ":",
+          ...lines.slice(left + 1, right).map((l) => l.trim()),
         ].join(" ")
       );
       continue;
     }
-    results.push(lowercaseLines.slice(left, right).join(" "));
+    results.push(lines.slice(left, right).join(" "));
   }
 
   return results;
