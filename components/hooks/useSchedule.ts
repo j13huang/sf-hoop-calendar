@@ -1,9 +1,7 @@
-import useSWRImmutable from "swr";
+import useSWRImmutable from "swr/immutable";
 
-const fetcher = (input: RequestInfo | URL, init?: RequestInit) => {
-  console.log("fetching???", input);
-  return fetch(input, init).then((res) => res.json());
-};
+const fetcher = (input: RequestInfo | URL, init?: RequestInit) =>
+  fetch(input, init).then((res) => res.json());
 
 export default function useSchedule(location, enabled) {
   const { data, error, isLoading } = useSWRImmutable(

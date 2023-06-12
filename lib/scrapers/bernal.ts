@@ -1,5 +1,6 @@
 import cheerio from "cheerio";
 
+// DEPRECATED FOR NON-GYM SCRAPERS (i.e. more generalized scrapers)
 export function extractBernalSchedule(body): string[] {
   const $ = cheerio.load(body);
   const lines = [];

@@ -1,6 +1,6 @@
 import cheerio from "cheerio";
-import { DATE_WORDS, TIME_REGEX } from "../time-utils";
 
+// DEPRECATED FOR NON-GYM SCRAPERS (i.e. more generalized scrapers)
 // upper noe's schedule formatting is a little weird so we want to process the text so that it looks like all the other websites
 export function extractUpperNoeSchedule(body): string[] {
   const $ = cheerio.load(body);
