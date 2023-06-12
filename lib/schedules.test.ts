@@ -9,11 +9,11 @@ describe("parse", () => {
   it("should parse days correctly for all activities", () => {
     // pulled from sunset rec friday jun 2 2023
     const times = [
-      "Tue: 10:00am - 3:30pm & 7:00 - 8:45pm Basketball  10:00am - 12:30pm & 2:30 - 8:45pm Table Tennis ",
-      "Wed: 10:00am - 3:00pm Basketball 10:00am - 6:00pm & 7:30pm - 8:45pm Table Tennis  7:00pm - 9:00pm Volleyball ",
-      "Thu: 12:30pm - 3:30pm Basketball 10:00am - 8:45pm Table Tennis 10:30am - 12:30pm Badminton",
-      "Fri: 10:00am - 3:30pm & 7:00pm - 8:45pm Basketball 10:00am - 8:45pm Table Tennis ",
-      "Sat: 9:00am - 5:00pm Basketball and Table Tennis",
+      "tue: 10:00am - 3:30pm & 7:00 - 8:45pm basketball  10:00am - 12:30pm & 2:30 - 8:45pm table tennis ",
+      "wed: 10:00am - 3:00pm basketball 10:00am - 6:00pm & 7:30pm - 8:45pm table tennis  7:00pm - 9:00pm volleyball ",
+      "thu: 12:30pm - 3:30pm basketball 10:00am - 8:45pm table tennis 10:30am - 12:30pm badminton",
+      "fri: 10:00am - 3:30pm & 7:00pm - 8:45pm basketball 10:00am - 8:45pm table tennis ",
+      "sat: 9:00am - 5:00pm basketball and table tennis",
     ];
     const expected = {
       Sunday: [],
@@ -51,27 +51,27 @@ describe("parse", () => {
   it("should parse days correctly with lots of filler", () => {
     // pulled from glen canyon friday jun 2 2023
     const times = [
-      "This facility will host day camp from June 12 through August 5. Access to this facility will be limited on week days before 3pm during this time. ",
+      "this facility will host day camp from june 12 through august 5. access to this facility will be limited on week days before 3pm during this time. ",
       " ",
-      "This facility offers open gym hours for pickup basketball and other sports. ",
+      "this facility offers open gym hours for pickup basketball and other sports. ",
       " ",
-      "Tue: 3:00 - 7:30pm BASKETBALL ; 5:00 - 7:30pm BADMINTON (1 Court)",
+      "tue: 3:00 - 7:30pm basketball ; 5:00 - 7:30pm badminton (1 court)",
       "  ",
-      "Wed: 2:45pm - 3:45pm ZUMBA; 4:00pm – 6:00pm BASKETBALL; 6:00pm - 8:00pm VOLLEYBALL ",
+      "wed: 2:45pm - 3:45pm zumba; 4:00pm – 6:00pm basketball; 6:00pm - 8:00pm volleyball ",
       "  ",
-      "Thu: 3:00pm - 7:30pm BASKETBALL ",
+      "thu: 3:00pm - 7:30pm basketball ",
       "  ",
-      "Fri: 3:00pm – 4:30pm BASKETBALL; 4:30pm - 7:30pm PICKLEBALL",
+      "fri: 3:00pm – 4:30pm basketball; 4:30pm - 7:30pm pickleball",
       "  ",
-      "Sat: 2:00pm - 4:30pm BASKETBALL ",
+      "sat: 2:00pm - 4:30pm basketball ",
       "",
-      "Open Rock-Climbing Times",
-      "Sat: 10:00am - 11:00am; 11:00am - 12:00pm; 1:00pm - 2:00pm; 2:00pm - 3:00pm; 3:00pm - 4:00pm rock climbing ",
+      "open rock-climbing times",
+      "sat: 10:00am - 11:00am; 11:00am - 12:00pm; 1:00pm - 2:00pm; 2:00pm - 3:00pm; 3:00pm - 4:00pm rock climbing ",
       " ",
-      "Climbers who have not filled out a waiver in the past two years should first fill out a waiver here. ",
+      "climbers who have not filled out a waiver in the past two years should first fill out a waiver here. ",
       " ",
-      "Starting June 3, rock wall reservations can be made HERE beginning at 9am on Saturdays. One form must be filled out per climber. Fee is $12 per hour per climber.",
-      "Natural Area",
+      "starting june 3, rock wall reservations can be made here beginning at 9am on saturdays. one form must be filled out per climber. fee is $12 per hour per climber.",
+      "natural area",
     ];
     const expected = {
       Sunday: [],
@@ -107,12 +107,12 @@ describe("parse", () => {
 
   it("should filter to activity keyword (single word)", () => {
     const times = [
-      "Tue: 10:00am - 3:30pm & 7:00 - 8:45pm Basketball  10:00am - 12:30pm & 2:30 - 8:45pm Table Tennis ",
-      //"Wed: 10:00am - 3:00pm Basketball 10:00am - 6:00pm & 7:30pm - 8:45pm Table Tennis  7:00pm - 9:00pm Volleyball ",
-      "Wednesday: 10:00am - 6:00 BASKETBALL, 6:00pm - 8:00pm MEN'S 55+BASKETBALL",
-      "Thu: 12:30pm - 3:30pm Basketball 10:00am - 8:45pm Table Tennis 10:30am - 12:30pm Badminton",
-      "Fri: 10:00am - 3:30pm & 7:00pm - 8:45pm Basketball 10:00am - 8:45pm Table Tennis ",
-      "Sat: 9:00am - 5:00pm Basketball and Table Tennis",
+      "tue: 10:00am - 3:30pm & 7:00 - 8:45pm basketball  10:00am - 12:30pm & 2:30 - 8:45pm table tennis ",
+      //"wed: 10:00am - 3:00pm basketball 10:00am - 6:00pm & 7:30pm - 8:45pm table tennis  7:00pm - 9:00pm volleyball ",
+      "wednesday: 10:00am - 6:00 basketball, 6:00pm - 8:00pm men's 55+basketball",
+      "thu: 12:30pm - 3:30pm basketball 10:00am - 8:45pm table tennis 10:30am - 12:30pm badminton",
+      "fri: 10:00am - 3:30pm & 7:00pm - 8:45pm basketball 10:00am - 8:45pm table tennis ",
+      "sat: 9:00am - 5:00pm basketball and table tennis",
     ];
     const expected = {
       Sunday: [],
@@ -130,18 +130,18 @@ describe("parse", () => {
       Saturday: [[540, 1020, "basketball"]],
     };
 
-    const result = parse(times, "basketball");
+    const result = parse(times, ["basketball"]);
     //console.log(JSON.stringify(result, null, 2));
     expect(result).toEqual(expected);
   });
 
   it("should filter to activity keyword (multiple words)", () => {
     const times = [
-      "Tuesday: 6:00PM - 7:30PM Adult Basketball:   ",
-      "Wednesday:  2:00PM - 5:00PM Youth Basketball    10:00AM - 2:00 PM Adult Basketball   ",
-      "Thursday: 5:30PM - 7:30PM Adult Basketball:   2:00PM - 5:00PM Youth Basketball:   ",
-      "Friday:  2:00PM - 3:30PM Youth Basketball    10:00AM - 2:00PM Adult Basketball   ",
-      "Saturday:  Resumes in March   ",
+      "tuesday: 6:00pm - 7:30pm adult basketball:   ",
+      "wednesday:  2:00pm - 5:00pm youth basketball    10:00am - 2:00 pm adult basketball   ",
+      "thursday: 5:30pm - 7:30pm adult basketball:   2:00pm - 5:00pm youth basketball:   ",
+      "friday:  2:00pm - 3:30pm youth basketball    10:00am - 2:00pm adult basketball   ",
+      "saturday:  resumes in march   ",
     ];
     const expected = {
       Sunday: [],
@@ -153,7 +153,31 @@ describe("parse", () => {
       Saturday: [],
     };
 
-    const result = parse(times, "adult basketball");
+    const result = parse(times, ["adult basketball"]);
+    //console.log(JSON.stringify(result, null, 2));
+    expect(result).toEqual(expected);
+  });
+
+  it("should filter to activity keyword (multiple filters)", () => {
+    // pulled from eureka valley rec saturday jun 11 2023
+    const times = [
+      "tue: 9:00am - 12:00pm 55 and better basketball, 12:00pm - 3:30pm drop-in basketball, drop-in open women's run 6:00pm - 8:00pm: ",
+      "wed: 9:00am - 3:00pm drop-in basketball, 3:30pm - 6:30pm junior warriors practice (until 2/22/23): ",
+      "thu: 9:00am - 12:00pm 55 and better basketball, 12:00pm - 3:00pm pickleball; 3:00pm - 5:30pm drop-in basketball; 5:30pm - 8:00pm drop-in volleyball (advanced players): ",
+      "fri: 10:00am - 11:30am tots, 12:00pm - 3:00pm pickleball, 3:00pm - 5:00pm basketball; 5:00pm - 8:00pm pickleball: ",
+      "sat: 9:00am - 1:00pm drop-in volleyball (advanced players), 1:00pm - 5:00pm junior warriors games (until 2/25/23):  report a maintenance issue to report a maintenance or vandalism issue at this site, call 311, or click here.  reserve a space at this facility",
+    ];
+    const expected = {
+      Sunday: [],
+      Monday: [],
+      Tuesday: [[720, 930, "drop-in basketball"]],
+      Wednesday: [[540, 900, "drop-in basketball"]],
+      Thursday: [[900, 1050, "drop-in basketball"]],
+      Friday: [[900, 1020, "basketball"]],
+      Saturday: [],
+    };
+
+    const result = parse(times, ["drop-in basketball", "basketball"]);
     //console.log(JSON.stringify(result, null, 2));
     expect(result).toEqual(expected);
   });
@@ -169,11 +193,11 @@ describe("standardizedExtractedText", () => {
       "Saturday:  Resumes in March   ",
     ];
     const expected = [
-      "Tuesday: 6:00PM - 7:30PM Adult Basketball:   ",
-      "Wednesday:  2:00PM - 5:00PM Youth Basketball    10:00AM - 2:00 PM Adult Basketball   ",
-      "Thursday: 5:30PM - 7:30PM Adult Basketball:   2:00PM - 5:00PM Youth Basketball:   ",
-      "Friday:  2:00PM - 3:30PM Youth Basketball    10:00AM - 2:00PM Adult Basketball   ",
-      "Saturday:  Resumes in March   ",
+      "tuesday: 6:00pm - 7:30pm adult basketball:   ",
+      "wednesday:  2:00pm - 5:00pm youth basketball    10:00am - 2:00 pm adult basketball   ",
+      "thursday: 5:30pm - 7:30pm adult basketball:   2:00pm - 5:00pm youth basketball:   ",
+      "friday:  2:00pm - 3:30pm youth basketball    10:00am - 2:00pm adult basketball   ",
+      "saturday:  resumes in march   ",
     ];
 
     const result = standardizedExtractedText(lines);
@@ -216,11 +240,11 @@ describe("standardizedExtractedText", () => {
       "Hours subject to change.",
     ];
     const expected = [
-      "Tuesday::  Adult Basketball: 6:00PM - 7:30PM ",
-      "Wednesday::  Adult Basketball: 10:00AM - 2:00 PM  Youth Basketball: 2:00PM - 5:00PM ",
-      "Thursday::  Youth Basketball: 2:00PM - 5:00PM  Adult Basketball: 5:30PM - 7:30PM ",
-      "Friday::  Adult Basketball: 10:00AM - 2:00PM  Youth Basketball: 2:00PM - 3:30PM ",
-      "Saturday::  Resumes in March Hours subject to change.",
+      "tuesday::  adult basketball: 6:00pm - 7:30pm ",
+      "wednesday::  adult basketball: 10:00am - 2:00 pm  youth basketball: 2:00pm - 5:00pm ",
+      "thursday::  youth basketball: 2:00pm - 5:00pm  adult basketball: 5:30pm - 7:30pm ",
+      "friday::  adult basketball: 10:00am - 2:00pm  youth basketball: 2:00pm - 3:30pm ",
+      "saturday::  resumes in march hours subject to change.",
     ];
 
     const result = standardizedExtractedText(lines);
@@ -247,7 +271,7 @@ describe("tokenize", () => {
     expect(result).toEqual(expected);
   });
 
-  it("Handles extraneous colons", () => {
+  it("Handles extraneous semi-colons", () => {
     const schedule =
       "2:45pm - 3:45pm ZUMBA; 4:00pm – 6:00pm BASKETBALL; 6:00pm - 8:00pm VOLLEYBALL";
     const expected = [
@@ -257,6 +281,56 @@ describe("tokenize", () => {
       ["BASKETBALL;"],
       ["6:00pm", "8:00pm"],
       ["VOLLEYBALL"],
+    ];
+
+    const result = tokenize(schedule);
+    //console.log(result);
+    expect(result).toEqual(expected);
+  });
+
+  it("Handles long dashes", () => {
+    const schedule =
+      "2:45pm – 3:45pm ZUMBA 4:00pm – 6:00pm BASKETBALL 6:00pm – 8:00pm VOLLEYBALL";
+    const expected = [
+      ["2:45pm", "3:45pm"],
+      ["ZUMBA"],
+      ["4:00pm", "6:00pm"],
+      ["BASKETBALL"],
+      ["6:00pm", "8:00pm"],
+      ["VOLLEYBALL"],
+    ];
+
+    const result = tokenize(schedule);
+    //console.log(result);
+    expect(result).toEqual(expected);
+  });
+
+  it("Handles times separated with a dash but no spaces", () => {
+    const schedule =
+      "2:45pm–3:45pm ZUMBA 4:00pm–6:00pm BASKETBALL 6:00pm–8:00pm VOLLEYBALL";
+    const expected = [
+      ["2:45pm", "3:45pm"],
+      ["ZUMBA"],
+      ["4:00pm", "6:00pm"],
+      ["BASKETBALL"],
+      ["6:00pm", "8:00pm"],
+      ["VOLLEYBALL"],
+    ];
+
+    const result = tokenize(schedule);
+    //console.log(result);
+    expect(result).toEqual(expected);
+  });
+
+  it("reverses times when activity names come before times", () => {
+    // pulled from sunset rec saturday jun 11 2023
+    const schedule = "table tennis 9am–4:45pm basketball 9am–4:45pm ";
+    const expected = [
+      [],
+      ["9:00am", "4:45pm"],
+      ["basketball"],
+      ["9:00am", "4:45pm"],
+      ["table", "tennis"],
     ];
 
     const result = tokenize(schedule);

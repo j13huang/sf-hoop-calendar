@@ -10,7 +10,7 @@ const REC_CENTERS: {
     // css color for frontend
     color: string;
     // specific string matching filter for gym-specific customization
-    activityFilter?: string;
+    activityFilters?: string[];
     extract: (body: string) => string[];
   };
 } = {
@@ -42,7 +42,7 @@ const REC_CENTERS: {
     location: "Upper Noe",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Upper-Noe-Recreation-Center-112",
     color: "#52efd8",
-    activityFilter: "adult basketball",
+    activityFilters: ["adult basketball"],
     extract: extractUpperNoeSchedule,
   },
   "Bernal Heights": {
@@ -57,15 +57,14 @@ const REC_CENTERS: {
     color: "#ffff5f",
     extract: extractSunsetSchedule,
   },
-  /*
-  cheerio parser not working
-     "Eureka Valley": {
+  //cheerio parser not working
+  "Eureka Valley": {
     location: "Eureka Valley",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Eureka-Valley-Recreation-Center-86",
-      color: "red",
-    extract: extractSunsetSchedule,
+    color: "#ee5959",
+    activityFilters: ["basketball", "drop-in basketball"],
+    extract: extractBernalSchedule,
   },
-  */
 };
 
 export function getLocationData() {
@@ -118,7 +117,7 @@ export async function getSchedule(location: string) {
   //console.log(textSchedule);
   let cleaned = standardizedExtractedText(textSchedule);
   //console.log("cleaned", cleaned);
-  return parse(cleaned, rc.activityFilter || "basketball");
+  return parse(cleaned, rc.activityFilters || ["basketball"]);
 }
 
 // some schedules have the days on the same lines as their times
@@ -136,29 +135,32 @@ export function standardizedExtractedText(lines: string[]) {
     }
   });
 
+  let lowercaseLines = lines.map((l) => l.toLocaleLowerCase());
   let results = [];
   for (let i = 0; i < dayIndexes.length; i++) {
     let left = dayIndexes[i];
     let right = dayIndexes[i + 1];
     // make sure if day names are on individual lines that they end with a ":"
-    if ((right == null && left < lines.length - 1) || right > left + 1) {
+    if (
+      (right == null && left < lowercaseLines.length - 1) ||
+      right > left + 1
+    ) {
       results.push(
         [
-          lines[left].trim() + ":",
-          ...lines.slice(left + 1, right).map((l) => l.trim()),
+          lowercaseLines[left].trim() + ":",
+          ...lowercaseLines.slice(left + 1, right).map((l) => l.trim()),
         ].join(" ")
       );
       continue;
     }
-    results.push(lines.slice(left, right).join(" "));
+    results.push(lowercaseLines.slice(left, right).join(" "));
   }
 
   return results;
 }
 
 // export for testing
-export function parse(textSchedule: string[], activityFilter?: string) {
-  // can't use new Array(7).fill([]) because every sub-array references the single sub-array in the fill parameter
+export function parse(textSchedule: string[], activityFilters?: string[]) {
   const result = {
     Sunday: [],
     Monday: [],
@@ -170,7 +172,7 @@ export function parse(textSchedule: string[], activityFilter?: string) {
   };
   textSchedule.forEach((t) => {
     // t.split(':', 1) but preserve the remaining text
-    const parts = t.toLocaleLowerCase().split(":");
+    const parts = t.split(":");
     const [day, schedule] = [parts[0], parts.slice(1).join(":").trim()];
 
     if (DATE_WORDS[day] == null) {
@@ -179,8 +181,8 @@ export function parse(textSchedule: string[], activityFilter?: string) {
 
     const tokenized = tokenize(schedule);
     //console.log("tokenized", day, tokenized);
-    const processedSchedule = processTokens(tokenized, activityFilter);
-    //console.log("parsed", processedSchedule);
+    const processedSchedule = processTokens(tokenized, activityFilters);
+    //console.log("processed", processedSchedule);
     result[DATE_WORDS[day]].push(...processedSchedule);
   });
   return result;
@@ -190,8 +192,8 @@ export function parse(textSchedule: string[], activityFilter?: string) {
 export function tokenize(schedule: string) {
   const result = [];
   const tokens = schedule
-    // 	"\u45" and 	"\u2013"
-    .replace(/(-|–)/g, " - ")
+    // "\u45" and "\u2013"
+    //.replace(/(-|–)/g, " - ")
     .replace(/\s+/g, " ")
     .split(" ");
   let chunk = [];
@@ -213,8 +215,20 @@ export function tokenize(schedule: string) {
         result.push(chunk);
         chunk = [];
       }
-      chunk.push(parsedTime);
-    } else if (token === "-") {
+
+      if (token.includes("-") || token.includes("–")) {
+        // might be two times without spaces in between them
+        // "\u45" and "\u2013"
+        let splitTimes = token.replace(/(-|–)/g, "-").split("-");
+        chunk.push(parseTime(splitTimes[0]));
+        chunk.push(parseTime(splitTimes[1]));
+        result.push(chunk);
+        chunk = [];
+      } else {
+        chunk.push(parsedTime);
+      }
+    } else if (token === "-" || token === "–") {
+      // "\u45" and "\u2013"
       // '-' should indicate separator between two times, so just add the next time and skip
       i++;
       chunk.push(tokens[i]);
@@ -238,7 +252,7 @@ export function tokenize(schedule: string) {
 }
 
 // adds AM/PM period indicators and joins descriptions together with times
-function processTokens(tokenGroups: string[][], activityFilter?: string) {
+function processTokens(tokenGroups: string[][], activityFilters?: string[]) {
   let result = [];
   let intervals = [];
   for (let tokenGroup of tokenGroups) {
@@ -253,7 +267,8 @@ function processTokens(tokenGroups: string[][], activityFilter?: string) {
       continue;
     }
 
-    if (activityFilter && !matchesActivityFilter(tokenGroup, activityFilter)) {
+    let matchedFilter = matchActivityFilters(tokenGroup, activityFilters);
+    if (activityFilters && !matchedFilter) {
       intervals = [];
       continue;
     }
@@ -261,7 +276,7 @@ function processTokens(tokenGroups: string[][], activityFilter?: string) {
     intervals.forEach((interval) => {
       result.push([
         ...interval.map((i) => timeToMinutes(i)),
-        activityFilter || tokenGroup.join(" "),
+        matchedFilter ? matchedFilter : tokenGroup.join(" "),
       ]);
     });
     intervals = [];
@@ -270,13 +285,18 @@ function processTokens(tokenGroups: string[][], activityFilter?: string) {
   return result;
 }
 
-function matchesActivityFilter(tokenGroup: string[], activityFilter: string) {
-  if (activityFilter.includes(" ")) {
-    return tokenGroup.join(" ").includes(activityFilter);
-  }
+function matchActivityFilters(
+  tokenGroup: string[],
+  activityFilters?: string[]
+) {
+  return (activityFilters || []).find((filter) => {
+    if (filter.includes(" ")) {
+      return tokenGroup.join(" ").includes(filter);
+    }
 
-  //return !!tokenGroup.find((tg) => tg.startsWith(activityFilter));
-  return tokenGroup[0].includes(activityFilter);
+    //return !!tokenGroup.find((tg) => tg.startsWith(activityFilter));
+    return tokenGroup[0].includes(filter);
+  });
 }
 
 // export for testing
