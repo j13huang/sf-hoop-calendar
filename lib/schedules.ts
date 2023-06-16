@@ -91,7 +91,7 @@ export async function getSchedule(location: string) {
   let maxFound = 0;
   for (let scraper of SCRAPERS) {
     let scraped = scraper(body);
-    //console.log(scraped);
+    console.log(scraped);
     let dateWordsCount = Object.keys(DATE_WORDS).reduce((count, dateWord) => {
       if (
         scraped.find((line) => line.toLocaleLowerCase().startsWith(dateWord))
@@ -100,7 +100,7 @@ export async function getSchedule(location: string) {
       }
       return count;
     }, 0);
-    //console.log(dateWordsCount, standardizedScrapedText(scraped));
+    console.log(dateWordsCount, standardizedScrapedText(scraped));
     if (dateWordsCount > maxFound) {
       //console.log(scraped);
       textSchedule = scraped;
@@ -110,7 +110,7 @@ export async function getSchedule(location: string) {
   }
   //console.log(textSchedule);
   let cleaned = standardizedScrapedText(textSchedule);
-  //console.log("cleaned", cleaned);
+  console.log("cleaned", cleaned);
   return parse(cleaned, rc.activityFilters || ["basketball"]);
 }
 
