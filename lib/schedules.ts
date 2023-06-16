@@ -83,6 +83,7 @@ export async function getSchedule(location: string) {
   const response = await fetch(rc.url);
   let body = await response.text();
   while (body.includes("An error has occurred")) {
+    console.log("failed");
     const response = await fetch(rc.url);
     body = await response.text();
   }
