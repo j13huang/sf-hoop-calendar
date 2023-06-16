@@ -80,12 +80,17 @@ async function getSchedules() {
 
 export async function getSchedule(location: string) {
   let rc = REC_CENTERS[location];
+  console.log("fetching");
   const response = await fetch(rc.url);
+  console.log("fetched");
   let body = await response.text();
+  console.log("body");
   while (body.includes("An error has occurred")) {
     console.log("failed");
     const response = await fetch(rc.url);
+    console.log("re-fetched");
     body = await response.text();
+    console.log("body2");
   }
 
   let textSchedule: string[] = [];
