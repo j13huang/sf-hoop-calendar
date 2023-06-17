@@ -82,14 +82,22 @@ export async function getSchedule(location: string) {
   let rc = REC_CENTERS[location];
   console.log("fetching");
   let response = null;
+  let body = null;
   try {
-    response = await fetch(rc.url);
+    //response = await fetch(rc.url, { signal: AbortSignal.timeout(300) });
+    response = await fetch(rc.url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
+      },
+    });
+    console.log("fetched");
+    body = await response.text();
+    console.log("body");
   } catch (e) {
     console.log("fetch failed", e);
+    return;
   }
-  console.log("fetched");
-  let body = await response.text();
-  console.log("body");
   while (body.includes("An error has occurred")) {
     console.log("failed");
     const response = await fetch(rc.url);
