@@ -35,6 +35,20 @@ export default function DayGymSchedule({
         let scheduleInterval = timeIntervals[day].find((s) => {
           return timeIncrement >= s[0] && timeIncrement < s[1];
         });
+        const currentTimeIntervalStyle = `
+            div.currentTimeInterval {
+              position: relative;
+            }
+            .currentTimeInterval::after {
+              content: "";
+              top: ${((nowTotalMinutes - timeIncrement) / 15) * 24}px;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              border-top: 1px solid red;
+            }
+        `;
         let isCurrentTimeInterval =
           isToday &&
           nowTotalMinutes > timeIncrement &&
@@ -49,20 +63,8 @@ export default function DayGymSchedule({
                 isCurrentTimeInterval && "currentTimeInterval"
               )}
             >
-              {/* not sure how to move these style tags up because I get an error*/}
               <style jsx>{`
-                div.currentTimeInterval {
-                  position: relative;
-                }
-                .currentTimeInterval::after {
-                  content: "";
-                  top: ${((nowTotalMinutes - timeIncrement) / 15) * 24}px;
-                  left: 0;
-                  width: 100%;
-                  height: 100%;
-                  position: absolute;
-                  border-top: 1px solid red;
-                }
+                ${currentTimeIntervalStyle}
               `}</style>
             </div>
           );
@@ -86,20 +88,11 @@ export default function DayGymSchedule({
                 </div>
               </>
             )}
-            {/* not sure how to move these style tags up because I get an error*/}
+            {/* not sure why we can't merge these */}
             <style jsx>{`
-              div.currentTimeInterval {
-                position: relative;
-              }
-              .currentTimeInterval::after {
-                content: "";
-                top: ${((nowTotalMinutes - timeIncrement) / 15) * 24}px;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                position: absolute;
-                border-top: 1px solid red;
-              }
+              ${currentTimeIntervalStyle}
+            `}</style>
+            <style jsx>{`
               .active {
                 background-color: ${color};
                 color: black;
