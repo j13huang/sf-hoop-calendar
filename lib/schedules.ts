@@ -81,7 +81,12 @@ async function getSchedules() {
 export async function getSchedule(location: string) {
   let rc = REC_CENTERS[location];
   console.log("fetching");
-  const response = await fetch(rc.url);
+  let response = null;
+  try {
+    response = await fetch(rc.url);
+  } catch (e) {
+    console.log("fetch failed", e);
+  }
   console.log("fetched");
   let body = await response.text();
   console.log("body");
