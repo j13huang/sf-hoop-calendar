@@ -80,6 +80,7 @@ async function getSchedules() {
 
 export async function getSchedule(location: string) {
   let rc = REC_CENTERS[location];
+  /*
   console.log("fetching");
   let response = null;
   let body = null;
@@ -98,19 +99,22 @@ export async function getSchedule(location: string) {
     console.log("fetch failed", e);
     return;
   }
+  */
+  let response = await fetch(rc.url);
+  let body = await response.text();
   while (body.includes("An error has occurred")) {
-    console.log("failed");
+    //console.log("failed");
     const response = await fetch(rc.url);
-    console.log("re-fetched");
+    //console.log("re-fetched");
     body = await response.text();
-    console.log("body2");
+    //console.log("body2");
   }
 
   let textSchedule: string[] = [];
   let maxFound = 0;
   for (let scraper of SCRAPERS) {
     let scraped = scraper(body);
-    console.log(scraped);
+    //console.log(scraped);
     let dateWordsCount = Object.keys(DATE_WORDS).reduce((count, dateWord) => {
       if (
         scraped.find((line) => line.toLocaleLowerCase().startsWith(dateWord))
@@ -119,7 +123,7 @@ export async function getSchedule(location: string) {
       }
       return count;
     }, 0);
-    console.log(dateWordsCount, standardizedScrapedText(scraped));
+    //console.log(dateWordsCount, standardizedScrapedText(scraped));
     if (dateWordsCount > maxFound) {
       //console.log(scraped);
       textSchedule = scraped;
@@ -129,7 +133,7 @@ export async function getSchedule(location: string) {
   }
   //console.log(textSchedule);
   let cleaned = standardizedScrapedText(textSchedule);
-  console.log("cleaned", cleaned);
+  //console.log("cleaned", cleaned);
   return parse(cleaned, rc.activityFilters || ["basketball"]);
 }
 
