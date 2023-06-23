@@ -66,8 +66,13 @@ export default function Home({ initialSelectedLocations, locationData }) {
 
       <style jsx>{`
         main {
-          margin-top: 2rem;
+          margin-top: 1rem;
           margin-bottom: 2rem;
+        }
+        @media (max-width: 600px) {
+          main {
+            margin-top: 0;
+          }
         }
         footer {
           width: 100%;

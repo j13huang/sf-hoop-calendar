@@ -1,0 +1,31 @@
+.checkboxesContainer {
+  /*
+  margin-bottom: 1rem;
+  */
+  box-shadow: 0px 2px 4px -2px black;
+  position: sticky;
+  top: 0;
+  background-color: #272727;
+  z-index: 1;
+}
+
+.checkboxesHeader {
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.checkboxes {
+  padding: 1rem;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  .checkboxes {
+  }
+}

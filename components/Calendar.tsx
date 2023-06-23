@@ -3,7 +3,7 @@ import clsx from "clsx";
 import styles from "../styles/Calendar.module.css";
 import dayGymScheduleStyles from "../styles/DayGymSchedule.module.css";
 
-import LocationCheckbox from "./LocationCheckbox";
+import LocationCheckboxes from "./LocationCheckboxes";
 import DayGymSchedule from "./DayGymSchedule";
 import CalendarDay, { TIME_INCREMENTS } from "./DayGymSchedule";
 import { minutesToTime } from "../lib/time-utils";
@@ -17,7 +17,7 @@ export default function Calendar({
   initialSelectedLocations,
   locationData,
 }: Props) {
-  const [selectedLocations, setLocations] = useState(() => {
+  const [selectedLocations, setSelectedLocations] = useState(() => {
     //console.log("hmm", initialSelectedLocations);
     return initialSelectedLocations;
   });
@@ -45,70 +45,64 @@ export default function Calendar({
   let nowTotalMinutes = now.getHours() * 60 + now.getMinutes();
   return (
     <div className={styles.container}>
-      <div className={styles.checkboxes}>
-        {locationData.map(({ location, url }) => {
-          return (
-            <LocationCheckbox
-              key={location}
-              location={location}
-              url={url}
-              enabled={!!selectedLocations[location]}
-              onChange={() => {
-                setLocations({
-                  ...selectedLocations,
-                  [location]: !selectedLocations[location],
-                });
-              }}
-            />
-          );
-        })}
-      </div>
-      <div key="times">
-        <div>&nbsp;</div>
-        <div className={styles.times}>
-          {TIME_INCREMENTS.map((timeIncrement, i) => (
-            <div
-              key={timeIncrement}
-              className={dayGymScheduleStyles.timeIncrement}
-            >
-              {i % 4 === 0 ? minutesToTime(timeIncrement) : ""}
-            </div>
-          ))}
-        </div>
-      </div>
+      <LocationCheckboxes
+        locationData={locationData}
+        selectedLocations={selectedLocations}
+        onChange={(location) => {
+          setSelectedLocations({
+            ...selectedLocations,
+            [location]: !selectedLocations[location],
+          });
+        }}
+      />
       <div className={styles.calendarContainer}>
-        {[
-          "Sunday",
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-        ].map((day, i) => {
-          return (
-            <div key={day} className={styles.day}>
-              <div className={styles.dayName}>{day}</div>
-              <div className={styles.dayGymSchedules}>
-                {locationData.map(({ location, color }) => {
-                  if (!selectedLocations[location]) {
-                    return null;
-                  }
-                  return (
-                    <DayGymSchedule
-                      key={location}
-                      location={location}
-                      color={color}
-                      day={day}
-                      isToday={now.getDay() === i}
-                      nowTotalMinutes={nowTotalMinutes}
-                    />
-                  );
-                })}
+        <div key="times">
+          <div>&nbsp;</div>
+          <div className={styles.times}>
+            {TIME_INCREMENTS.map((timeIncrement, i) => (
+              <div
+                key={timeIncrement}
+                className={dayGymScheduleStyles.timeIncrement}
+              >
+                {i % 4 === 0 ? minutesToTime(timeIncrement) : ""}
               </div>
-            </div>
-          );
-        })}
+            ))}
+          </div>
+        </div>
+        <div className={styles.calendar}>
+          {[
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+          ].map((day, i) => {
+            return (
+              <div key={day} className={styles.day}>
+                <div className={styles.dayName}>{day}</div>
+                <div className={styles.dayGymSchedules}>
+                  {locationData.map(({ location, color }) => {
+                    if (!selectedLocations[location]) {
+                      return null;
+                    }
+                    return (
+                      <DayGymSchedule
+                        key={location}
+                        location={location}
+                        color={color}
+                        day={day}
+                        isToday={now.getDay() === i}
+                        nowTotalMinutes={nowTotalMinutes}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
