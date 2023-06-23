@@ -38,6 +38,18 @@ export default function Home({ initialSelectedLocations, locationData }) {
           Powered by{" "}
           <img src="/vercel.svg" alt="Vercel" className={styles.logo} />
         </a>
+        <a
+          href="https://github.com/j13huang/sf-hoop-calendar"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Github{" "}
+          <img
+            src="/github-mark-white.svg"
+            alt="Github"
+            className={styles.logo}
+          />
+        </a>
       </footer>
       {/*
       this came from chatgpt and it errors wtf
