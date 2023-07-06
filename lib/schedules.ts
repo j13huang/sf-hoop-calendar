@@ -38,7 +38,7 @@ const REC_CENTERS: {
     location: "Upper Noe",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Upper-Noe-Recreation-Center-112",
     color: "#52efd8",
-    activityFilters: ["adult basketball"],
+    activityFilters: ["adult basketball", "all ages basketball"],
   },
   "Bernal Heights": {
     location: "Bernal Heights",
