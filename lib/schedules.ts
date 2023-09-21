@@ -55,7 +55,7 @@ const REC_CENTERS: {
     location: "Eureka Valley",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Eureka-Valley-Recreation-Center-86",
     color: "#ee5959",
-    activityFilters: ["basketball", "drop-in basketball"],
+    activityFilters: ["basketball", "drop-in basketball", "drop in basketball"],
   },
 };
 

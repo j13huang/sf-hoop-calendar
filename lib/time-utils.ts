@@ -41,8 +41,8 @@ export function parseTime(time: string) {
 // convert to minutes from midnight
 export function timeToMinutes(time: string): number {
   let number = 0;
-  let matchedTime = time.match(TIME_REGEX);
-  if (matchedTime && matchedTime[0].endsWith("pm")) {
+  let timeMatch = time.match(TIME_REGEX);
+  if (timeMatch && timeMatch[0].endsWith("pm")) {
     number += 720;
   }
 
