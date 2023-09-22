@@ -35,7 +35,12 @@ export default function DayGymSchedule({
         let scheduleInterval = timeIntervals[day].find((s) => {
           return timeIncrement >= s[0] && timeIncrement < s[1];
         });
-        const currentTimeIntervalStyle = `
+        let isCurrentTimeInterval =
+          isToday &&
+          nowTotalMinutes > timeIncrement &&
+          nowTotalMinutes - timeIncrement <= 15;
+        const currentTimeIntervalStyle = isCurrentTimeInterval
+          ? `
             div.currentTimeInterval {
               position: relative;
             }
@@ -48,11 +53,8 @@ export default function DayGymSchedule({
               position: absolute;
               border-top: 1px solid red;
             }
-        `;
-        let isCurrentTimeInterval =
-          isToday &&
-          nowTotalMinutes > timeIncrement &&
-          nowTotalMinutes - timeIncrement <= 15;
+        `
+          : "";
         if (scheduleInterval == null) {
           return (
             <div
