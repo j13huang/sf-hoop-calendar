@@ -198,7 +198,7 @@ export function parse(textSchedule: string[], activityFilters?: string[]) {
     const tokenized = tokenize(schedule);
     //console.log("tokenized", day, tokenized);
     const processedSchedule = processTokens(tokenized, activityFilters);
-    //console.log("processed", processedSchedule);
+    //console.log("processed", day, processedSchedule);
     result[DATE_WORDS[day]].push(...processedSchedule);
   });
   return result;

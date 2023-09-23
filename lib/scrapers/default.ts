@@ -16,6 +16,7 @@ export function defaultScraper(body): string[] {
   );
   */
   let content = heading.find("#isPasted").first().closest("h2.subhead1");
+  //console.log(content.html());
   if (!$(content).length) {
     //console.log("nope");
     // if it's not nested under the same h2 element, it could be under the adjacent sibling
@@ -24,6 +25,7 @@ export function defaultScraper(body): string[] {
       .first()
       .closest("h2.subhead1");
   }
+  //console.log(content.html());
   //console.log("yep", $.html(content));
   content
     .find("div")
@@ -45,15 +47,15 @@ export function defaultScraper(body): string[] {
     $(e)
       .find("br")
       .each((i, br) => {
-        $(br).replaceWith("<span>&nbsp;</span>");
+        //$(br).replaceWith("<span>&nbsp;</span>");
+        $(br).replaceWith("\n");
+        //console.log($(br).html(), $(br).prop("tagName"));
+        //console.log($(br.prev).html(), $(br.prev).prop("tagName"));
+        //console.log($(br.next).html(), $(br.next).prop("tagName"));
       });
-    lines.push($(e).text());
+    lines.push(...$(e).text().split("\n"));
   });
-  //console.log(lines);
+  //console.log("defaultScraper", lines);
 
   return lines.map((l) => l.trim());
-  //console.log(times);
-  //let result = parse(times, activityFilter);
-  //console.log("done", result);
-  //return result;
 }
