@@ -33,7 +33,10 @@ export default function DayGymSchedule({
     <div className={styles.dayGymSchedule}>
       {TIME_INCREMENTS.map((timeIncrement) => {
         let scheduleInterval = timeIntervals[day].find((s) => {
-          return timeIncrement >= s[0] && timeIncrement < s[1];
+          return (
+            timeIncrement >= roundToNearest15(s[0]) &&
+            timeIncrement < roundToNearest15(s[1])
+          );
         });
         let isCurrentTimeInterval =
           isToday &&
@@ -71,17 +74,20 @@ export default function DayGymSchedule({
             </div>
           );
         }
+
+        const isFirstTimeIncrement =
+          roundToNearest15(scheduleInterval[0]) === timeIncrement && "first";
         return (
           <div
             key={`${location}-${timeIncrement}`}
             className={clsx(
               styles.timeIncrement,
               "active",
-              scheduleInterval[0] === timeIncrement && "first",
+              isFirstTimeIncrement && "first",
               isCurrentTimeInterval && "currentTimeInterval"
             )}
           >
-            {scheduleInterval[0] === timeIncrement && (
+            {isFirstTimeIncrement && (
               <>
                 <div>{location}</div>
                 <div>
@@ -109,4 +115,10 @@ export default function DayGymSchedule({
       })}
     </div>
   );
+}
+
+// round down
+function roundToNearest15(timeIncrement: number) {
+  let remainder = timeIncrement % 15;
+  return timeIncrement - remainder;
 }
