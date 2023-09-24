@@ -110,6 +110,7 @@ export default function DayGymSchedule({
                 padding: 4px;
               }
             `}</style>
+            {/* for .active.first if the time is not exactly on a 15m interval we could do position: relative and top: ${calculate pixels to move down} */}
           </div>
         );
       })}

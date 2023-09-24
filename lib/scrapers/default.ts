@@ -1,4 +1,5 @@
 import cheerio from "cheerio";
+import { extractText } from "./text-utils";
 
 export function defaultScraper(body): string[] {
   const $ = cheerio.load(body);
@@ -43,6 +44,7 @@ export function defaultScraper(body): string[] {
       lines.push($(e).text());
     });
   content.find("p").each((i, e) => {
+    /*
     // <br>s get collapsed when using .text() so turn them into spaces
     $(e)
       .find("br")
@@ -54,6 +56,9 @@ export function defaultScraper(body): string[] {
         //console.log($(br.next).html(), $(br.next).prop("tagName"));
       });
     lines.push(...$(e).text().split("\n"));
+    */
+    let text = extractText($, $(e));
+    lines.push(...text);
   });
   //console.log("defaultScraper", lines);
 

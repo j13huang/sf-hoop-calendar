@@ -1,4 +1,5 @@
 import cheerio from "cheerio";
+import { extractText } from "./text-utils";
 
 export function siblingsScraper(body): string[] {
   const $ = cheerio.load(body);
@@ -44,7 +45,6 @@ export function siblingsScraper(body): string[] {
       console.log("html", $(e).html());
       console.log("text", $(e).text());
     });
-    */
     //console.log("---------------");
     //current.contents().each((i, e) => {
     current.children().each((i, e) => {
@@ -59,6 +59,10 @@ export function siblingsScraper(body): string[] {
         });
     });
     lines.push(...$(current).text().split("\n"));
+    */
+    let text = extractText($, current);
+    lines.push(...text);
+
     //console.log("\n+\n");
     //console.log($(current).text());
     current = current.next();
