@@ -1,8 +1,19 @@
 import { defaultScraper } from "./scrapers/default";
+import { defaultAdjacentScraper } from "./scrapers/defaultAdjacent";
 import { siblingsScraper } from "./scrapers/siblings";
 import { DATE_WORDS, parseTime, timeToMinutes } from "./time-utils";
 
-const SCRAPERS = [defaultScraper, siblingsScraper];
+const SCRAPERS = [
+  { name: "defaultScraper", scraper: defaultScraper },
+  {
+    name: "defaultAdjacentScraper",
+    scraper: defaultAdjacentScraper,
+  },
+  {
+    name: "siblingScraper",
+    scraper: siblingsScraper,
+  },
+];
 
 const REC_CENTERS: {
   [key: string]: {
@@ -112,9 +123,10 @@ export async function getSchedule(location: string) {
 
   let textSchedule: string[] = [];
   let maxFound = 0;
-  for (let scraper of SCRAPERS) {
+  let scraperUsed = "no scraper used";
+  for (let { name, scraper } of SCRAPERS) {
     let scraped = scraper(body);
-    //console.log(scraped);
+    //console.log(name, scraped);
     let dateWordsCount = Object.keys(DATE_WORDS).reduce((count, dateWord) => {
       if (
         scraped.find((line) => line.toLocaleLowerCase().startsWith(dateWord))
@@ -123,17 +135,18 @@ export async function getSchedule(location: string) {
       }
       return count;
     }, 0);
-    //console.log(dateWordsCount, standardizedScrapedText(scraped));
+    //console.log(name, dateWordsCount, standardizedScrapedText(scraped));
     if (dateWordsCount > maxFound) {
-      //console.log(scraped);
+      //console.log(name, scraped);
       textSchedule = scraped;
       maxFound = dateWordsCount;
+      scraperUsed = name;
       //break;
     }
   }
-  //console.log(textSchedule);
+  //console.log(scraperUsed, textSchedule);
   let cleaned = standardizedScrapedText(textSchedule);
-  //console.log("cleaned", cleaned);
+  //console.log("cleaned", scraperUsed, cleaned);
   return parse(cleaned, rc.activityFilters || ["basketball"]);
 }
 
