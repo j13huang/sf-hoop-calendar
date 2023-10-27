@@ -1,7 +1,7 @@
 import cheerio from "cheerio";
 import { extractLines } from "./text-utils";
 
-export function defaultScraper(body): string[] {
+export function defaultAdjacentScraper(body): string[] {
   const $ = cheerio.load(body);
   const lines = [];
 
@@ -18,5 +18,9 @@ export function defaultScraper(body): string[] {
   */
   //let content = content.find("#isPasted").first().closest("h2.subhead1");
   //console.log(content.html());
+  // if it's not nested under the same h2 element, it could be under the adjacent sibling
+  content = $(content.next()).find("#isPasted").first().closest("h2.subhead1");
+  //console.log(content.html());
+  //console.log("yep", $.html(content));
   return extractLines($, content);
 }

@@ -1,5 +1,46 @@
 import cheerio from "cheerio";
 
+export function extractLines($: cheerio.Root, element: cheerio.Cheerio) {
+  let lines = [];
+  /*
+  element
+    .find("div")
+    .first()
+    .find("div")
+    .first()
+    .children()
+    .each((i, e) => {
+      //console.log("yo", $(e).text());
+      $(e)
+        .find("br")
+        .each((i, br) => {
+          $(br).replaceWith("<span>&nbsp;</span>");
+        });
+      lines.push($(e).text());
+    });
+    */
+  element.find("p").each((i, e) => {
+    /*
+    // <br>s get collapsed when using .text() so turn them into spaces
+    $(e)
+      .find("br")
+      .each((i, br) => {
+        //$(br).replaceWith("<span>&nbsp;</span>");
+        $(br).replaceWith("\n");
+        //console.log($(br).html(), $(br).prop("tagName"));
+        //console.log($(br.prev).html(), $(br.prev).prop("tagName"));
+        //console.log($(br.next).html(), $(br.next).prop("tagName"));
+      });
+    lines.push(...$(e).text().split("\n"));
+    */
+    let text = extractText($, $(e));
+    lines.push(...text);
+  });
+  //console.log("defaultScraper", lines);
+
+  return lines.map((l) => l.trim());
+}
+
 // replace brs with spaces if they are surrounded by text elements
 // otherwise replace brs with newlines
 export function extractText($: cheerio.Root, element: cheerio.Cheerio) {
