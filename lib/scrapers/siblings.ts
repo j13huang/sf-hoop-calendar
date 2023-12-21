@@ -1,5 +1,5 @@
 import cheerio from "cheerio";
-import { extractText } from "./text-utils";
+import { extractLines, extractText } from "./text-utils";
 
 export function siblingsScraper(body): string[] {
   const $ = cheerio.load(body);
@@ -8,6 +8,8 @@ export function siblingsScraper(body): string[] {
   //let yo = $("#isPasted").parent("h2.subhead1");
 
   let heading = $('h2.subhead1:contains("Open Gym Hours")');
+
+  lines.push(...extractText($, heading));
   //let ps = heading.next().find("p");
   //console.log(ps, $.html(ps));
   /*
@@ -20,6 +22,7 @@ export function siblingsScraper(body): string[] {
   let hasSeenNonH2s = false;
   let i = 0;
   while (true) {
+    //console.log($(current).html());
     if (current.length === 0) {
       break;
     }

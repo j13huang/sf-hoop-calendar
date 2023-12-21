@@ -43,9 +43,25 @@ export function extractLines($: cheerio.Root, element: cheerio.Cheerio) {
 
 // replace brs with spaces if they are surrounded by text elements
 // otherwise replace brs with newlines
-export function extractText($: cheerio.Root, element: cheerio.Cheerio) {
+export function extractText(
+  $: cheerio.Root,
+  element: cheerio.Cheerio,
+  printDebug?: boolean
+) {
   let result = [];
   //console.log($(element).html());
+
+  $(element)
+    .find("span")
+    .each((i, span) => {
+      if ($(span).text() === "\u00A0") {
+        // single nbsp surrounded by spans get collapsed into spaces, so turn it into newline
+        $(span).replaceWith("\n");
+      }
+
+      // in any other case turn it into a newline
+    });
+
   $(element)
     .find("br")
     .each((i, br) => {
@@ -68,6 +84,13 @@ export function extractText($: cheerio.Root, element: cheerio.Cheerio) {
       $(br).replaceWith("\n");
     });
 
+  if (printDebug) {
+    console.log(
+      $(element).text()
+      //.split("\u00A0")
+      //.map((n) => n.split("\n"))
+    );
+  }
   result.push(
     ...$(element)
       .text()
