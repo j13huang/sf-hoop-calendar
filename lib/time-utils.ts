@@ -59,3 +59,13 @@ export function minutesToTime(minutes: number) {
   let m = minutes % 60;
   return `${h}:${m.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`;
 }
+
+// convert 24H time string to minutes from midnight
+export function clockTimeToMinutes(clockTime24H: string): number {
+  let hourString = clockTime24H.slice(0, clockTime24H.length - 2);
+  let hours = hourString.length > 0 ? parseInt(hourString) * 60 : 0;
+
+  let minuteString = clockTime24H.slice(clockTime24H.length - 2);
+  let minutes = parseInt(minuteString);
+  return hours + minutes;
+}
