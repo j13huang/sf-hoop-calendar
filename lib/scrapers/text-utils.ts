@@ -76,7 +76,9 @@ export function extractText(
       ) {
         // br surrounded by text nodes
         // <br>s get collapsed when using .text() so turn them into spaces
-        $(br).replaceWith("<span>&nbsp;</span>");
+        //console.log("replacing br");
+        //$(br).replaceWith("<span>&nbsp;</span>");
+        $(br).replaceWith("&nbsp;");
         return;
       }
 
@@ -99,6 +101,6 @@ export function extractText(
   );
   //console.log([$(element).text()]);
   //console.log($(element).html(), result, "-----");
-  //console.log(result)
+  //console.log(result);
   return result;
 }

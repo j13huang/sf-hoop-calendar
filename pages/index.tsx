@@ -139,7 +139,7 @@ export default function Home({ initialSelectedLocations, locationData }) {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   //console.log(context.req.cookies);
   const locationData = getLocationData();
-  let initialSelectedLocations = { Sunset: true, "Glen Canyon Park": true };
+  let initialSelectedLocations = { "Potrero Hill": true };
   if (context.req.cookies.selectedLocations) {
     //console.log("here?", context.req.cookies.selectedLocations);
     initialSelectedLocations = JSON.parse(

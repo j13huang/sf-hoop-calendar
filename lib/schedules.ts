@@ -1,6 +1,7 @@
 import { defaultScraper } from "./scrapers/default";
 import { defaultAdjacentScraper } from "./scrapers/defaultAdjacent";
 import { siblingsScraper } from "./scrapers/siblings";
+import { tableScraper } from "./scrapers/tableScraper";
 import { DATE_WORDS, parseTime, timeToMinutes } from "./time-utils";
 
 const SCRAPERS = [
@@ -12,6 +13,10 @@ const SCRAPERS = [
   {
     name: "siblingScraper",
     scraper: siblingsScraper,
+  },
+  {
+    name: "tableScraper",
+    scraper: tableScraper,
   },
 ];
 
@@ -49,7 +54,7 @@ const REC_CENTERS: {
     location: "Upper Noe",
     url: "https://sfrecpark.org/Facilities/Facility/Details/Upper-Noe-Recreation-Center-112",
     color: "#52efd8",
-    activityFilters: ["adult basketball", "all ages basketball"],
+    activityFilters: ["adult basketball", "all ages basketball", "adults"],
   },
   "Bernal Heights": {
     location: "Bernal Heights",

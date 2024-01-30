@@ -7,7 +7,8 @@ export function siblingsScraper(body): string[] {
 
   //let yo = $("#isPasted").parent("h2.subhead1");
 
-  let heading = $('h2.subhead1:contains("Open Gym Hours")');
+  let heading = $('h2.subhead1:contains("Open Gym")');
+  //console.log($(heading).html());
 
   lines.push(...extractText($, heading));
   //let ps = heading.next().find("p");

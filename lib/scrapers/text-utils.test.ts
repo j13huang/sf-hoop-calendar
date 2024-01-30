@@ -35,7 +35,7 @@ describe("replaceBRs", () => {
     let element = $("div");
     extractText($, element);
 
-    let result = extractText($, element);
+    let result = extractText($, element, false);
     expect(result).toEqual(["hello\u00A0world"]);
   });
 });
