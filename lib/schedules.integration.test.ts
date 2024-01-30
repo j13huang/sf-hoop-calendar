@@ -42,6 +42,42 @@ describe("getSchedule", () => {
     });
   });
 
+  it("parses sunset winter 2024 html using sibling scraper", async () => {
+    let htmlString = fs.readFileSync(
+      `${__dirname}/integration-test-data/sunset-winter-2024.html`
+    );
+
+    jest
+      .spyOn(global, "fetch")
+      .mockImplementation(
+        () =>
+          Promise.resolve({ text: () => Promise.resolve(htmlString) }) as any
+      );
+
+    let result = await getSchedule("Sunset");
+    //console.log(result);
+    expect(result).toEqual({
+      Sunday: [],
+      Monday: [],
+      Tuesday: [
+        [clockTimeToMinutes("1915"), clockTimeToMinutes("2045"), "basketball"],
+        [clockTimeToMinutes("1000"), clockTimeToMinutes("1530"), "basketball"],
+      ],
+      Wednesday: [
+        [clockTimeToMinutes("1915"), clockTimeToMinutes("2045"), "basketball"],
+        [clockTimeToMinutes("1000"), clockTimeToMinutes("1530"), "basketball"],
+      ],
+      Thursday: [
+        [clockTimeToMinutes("1230"), clockTimeToMinutes("1630"), "basketball"],
+      ],
+      Friday: [
+        [clockTimeToMinutes("1915"), clockTimeToMinutes("2045"), "basketball"],
+        [clockTimeToMinutes("1000"), clockTimeToMinutes("1530"), "basketball"],
+      ],
+      Saturday: [],
+    });
+  });
+
   it("parses glen park fall 2023 html using sibling scraper", async () => {
     let htmlString = fs.readFileSync(
       `${__dirname}/integration-test-data/glen-park-fall-2023.html`
@@ -143,6 +179,39 @@ describe("getSchedule", () => {
       Saturday: [
         [clockTimeToMinutes("1015"), clockTimeToMinutes("1645"), "basketball"],
       ],
+    });
+  });
+
+  it("parses upper noe winter 2024 html using table scraper", async () => {
+    let htmlString = fs.readFileSync(
+      `${__dirname}/integration-test-data/upper-noe-winter-2024.html`
+    );
+
+    jest
+      .spyOn(global, "fetch")
+      .mockImplementation(
+        () =>
+          Promise.resolve({ text: () => Promise.resolve(htmlString) }) as any
+      );
+
+    let result = await getSchedule("Upper Noe");
+    //console.log(result);
+    expect(result).toEqual({
+      Sunday: [],
+      Monday: [],
+      Tuesday: [
+        [clockTimeToMinutes("1800"), clockTimeToMinutes("1930"), "adults"],
+      ],
+      Wednesday: [
+        [clockTimeToMinutes("1000"), clockTimeToMinutes("1400"), "adults"],
+      ],
+      Thursday: [
+        [clockTimeToMinutes("1730"), clockTimeToMinutes("1930"), "adults"],
+      ],
+      Friday: [
+        [clockTimeToMinutes("1000"), clockTimeToMinutes("1400"), "adults"],
+      ],
+      Saturday: [],
     });
   });
 });
